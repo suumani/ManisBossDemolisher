@@ -1,106 +1,124 @@
 # Manis Boss Demolisher
 
-## 概要
+[日本語版はこちら / Japanese version](README.ja.md)
 
-**Manis Boss Demolisher** は、  
-Space Age 環境における **デモリッシャーという存在を「惑星単位の脅威」へ引き上げる** ことを目的とした Mod です。
+## Overview
 
-ロケットの打ち上げを契機として、  
-ある惑星で活動していたデモリッシャーの脅威が、別の惑星へと波及していきます。
+**Manis Boss Demolisher** is a mod designed to elevate  
+**Demolishers from a local enemy into a planetary-scale threat**  
+within the Space Age environment.
 
-この Mod は、  
-**デモリッシャーをこよなく愛するあなたに、新たなリスクを生む世界を提供します。**
+By launching rockets,  
+the danger once confined to a single planet can spread beyond it.
 
----
-
-## コンセプト
-
-強力なボスというのは、倒せなくても良いものだと思っています。  
-避けるしかない超強力なボスと、やや強くてたまに襲ってくるボスとして、  
-できるだけデモリッシャーを **正当進化** させました。
-
-ロケット打ち上げ＝宇宙進出は、もはや安全な行為ではありません。  
-厳選した輸送と、大量輸送のバランスを、新たに考えることになるでしょう。
-
-この Mod は、  
-**プレイヤーに惑星攻略順序のさらなる検討を迫ります。**
+This mod offers a world where  
+**your progress itself creates new risks** —  
+especially for those who truly appreciate Demolishers.
 
 ---
 
-## この Mod が追加する体験
+## Concept
 
-- ある惑星での行動が、別の惑星の危険度を変化させる  
-- デモリッシャーは「待っている敵」ではなく、「移動し、拡散する脅威」になる  
-- 基地設計・惑星選択・ロケット運用に、長期的な判断が求められる  
+A powerful boss does not necessarily need to be defeatable.
 
-単なる高難度化ではなく、  
-**意思決定の重さを増やすべく意識した Mod です。**
+Some bosses are overwhelming and must be avoided.  
+Others are strong, persistent, and return when you least expect them.
 
----
+This mod evolves Demolishers in a *legitimate* way,  
+without turning them into simple damage sponges or scripted events.
 
-## 主な機能（現在）
+Rocket launches — symbols of progress and expansion —  
+are no longer safe actions.
 
-### ロケット打ち上げをトリガーとした侵略拡散
-- 特定条件下で、デモリッシャーの脅威が他惑星へ拡大します
+You will be forced to rethink the balance between  
+carefully selected transport and mass logistics.
 
-### ボス級デモリッシャーの存在
-- 通常個体とは異なる強力なデモリッシャーが出現します  
-- 中型・大型・ベヒモス級などの段階を持ちます  
-
-### 惑星ごとの侵略状態管理
-- 惑星単位で「撃破済み／未撃破」などの状態が管理されます  
-- 状態に応じて挙動やイベントが変化します  
-
-### 音・活動への反応
-- 一部のデモリッシャーは、プレイヤーの活動に反応して接近します  
+**Planetary progression order matters more than ever.**
 
 ---
 
-## 想定されるプレイの流れ（例）
+## What This Mod Adds to the Game
 
-1. 通常通り惑星を攻略し、ロケットを打ち上げる  
-2. その行為が引き金となり、別惑星に異変が発生  
-3. 侵略された惑星では、デモリッシャーの活動が活発化  
-4. 対応するか、後回しにするか、あるいは放棄するかを選択する  
+- Actions taken on one planet affect the danger level of others  
+- Demolishers are no longer passive enemies — they move and spread  
+- Base design, planet selection, and rocket usage require long-term planning  
+
+This is not merely a difficulty increase.  
+It is a mod focused on **the weight of decision-making**.
 
 ---
 
-## 対応環境
+## Main Features (Current)
+
+### Planetary Invasion Triggered by Rocket Launches
+- Under specific conditions, launching rockets causes Demolisher threats
+  to expand to other planets
+
+### Boss-Class Demolishers
+- Powerful Demolishers distinct from normal variants
+- Includes multiple tiers such as Medium, Large, and Behemoth-class
+
+### Planet-Based Invasion State Management
+- Each planet tracks states such as *defeated / undefeated*
+- Enemy behavior and events change depending on planetary state
+
+### Reaction to Noise and Activity
+- Certain Demolishers actively respond to player activity
+- They may approach your base instead of waiting passively
+
+---
+
+## Example Gameplay Flow
+
+1. You progress normally and launch rockets  
+2. That action triggers anomalies on other planets  
+3. On invaded planets, Demolisher activity intensifies  
+4. You must choose whether to respond, delay, or abandon the planet  
+
+These choices are **not reversible**.
+
+---
+
+## Supported Environment
 
 - Factorio 2.0+
-- Space Age 環境を前提としています  
-- 依存 Mod については `info.json` を参照してください  
+- Designed for the Space Age environment
+- See `info.json` for mod dependencies
 
 ---
 
-## 現在の開発状況
+## Development Status
 
-- コアとなる侵略・拡散ロジックは実装済み  
-- 惑星ごとの状態管理・撃破フラグは安定動作段階  
-- バランス調整および演出面は継続調整中  
-
----
-
-## ロードマップ（今後の予定）
-
-- 他 Mod との連携を前提とした拡張余地の確保  
-
-※ 具体仕様は予告なく変更される可能性があります。
+- Core invasion and expansion logic implemented
+- Planetary state tracking and defeat flags are stable
+- Balance and presentation are under continuous adjustment
 
 ---
 
-## この Mod について
+## Roadmap (Planned)
 
-この Mod は、  
-**「強い敵を増やす」こと**と、  
-それによって **開発優先順位と開発速度のバランスを見極める楽しさ** を目指しています。
+- Expanded behavioral differences between boss Demolishers
+- Planet-specific invasion patterns
+- Additional configuration options for invasion conditions
+- Future extensions designed with mod interoperability in mind
 
-楽しめるかどうかは、  
-あなたがどのようなプレイスタイルを好むか次第です。
+*Details may change without notice.*
 
 ---
 
-## ライセンス
+## About This Mod
+
+This mod is not about simply adding stronger enemies.
+
+It is about exploring the tension between  
+**development speed and development priority**.
+
+Whether this mod is enjoyable  
+depends entirely on your preferred playstyle.
+
+---
+
+## License
 
 MIT License  
 © suumani
