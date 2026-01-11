@@ -1,159 +1,158 @@
-# Manis Boss Demolisher — 仕様書（spec）
+# Manis Boss Demolisher — Specification (spec)
 
-本書は Manis Boss Demolisher の **設計意図・仕様・合意事項** を記録するためのドキュメントである。  
-Mod Portal や README では説明しきれない「判断基準」「世界観上の前提」「仕様の優先順位」を保持することを目的とする。
-
----
-
-## 0. 目的と非目的
-
-### 0.1 目的（Purpose）
-
-- デモリッシャーを「一時的な障害物」ではなく、  
-  **惑星単位で影響を及ぼす主役級の脅威**として再定義する
-- ロケット打ち上げ・宇宙進出を、  
-  **常にリスクを伴う意思決定**へと変化させる
-- プレイヤーに対し、
-  - 惑星攻略順序
-  - 輸送計画
-  - 放置・撤退・回避
-  という選択を強く意識させる
-
-### 0.2 非目的（Non-goals）
-
-- すべてのボスを撃破可能にすることは目的としない
-- デモリッシャーを「必ず戦う敵」にすることは目的としない
-- 単純な数値強化・高難度化を目的としない
-- 既存の戦闘バランスを完全に破壊することは意図しない
+This document records the **design intent, specifications, and agreed decisions** of Manis Boss Demolisher.  
+Its purpose is to preserve explicit criteria, worldview assumptions, and specification priorities that cannot be fully described in the Mod Portal or README.
 
 ---
 
-## 1. Mod の位置づけ
+## 0. Purpose and Non-goals
 
-- 分類：コンテンツ追加 / 敵挙動・世界状態拡張
-- 対象環境：Factorio 2.0+ / Space Age
-- 適用範囲：
-  - デモリッシャーが存在する惑星
-- コアファンタジー：
-  - 「宇宙へ進出するほど、世界は危険になる」
+### 0.1 Purpose
 
----
+- To redefine demolishers not as “temporary obstacles,” but as  
+  **primary, planet-scale threats that exert influence across an entire planet**.
+- To transform rocket launches and space expansion into  
+  **decision-making processes that always involve risk**.
+- To strongly encourage the player to consider choices such as:
+  - Planet conquest order
+  - Transportation planning
+  - Abandonment, retreat, or avoidance
 
-## 2. プレイヤー体験の基本構造
+### 0.2 Non-goals
 
-1. 惑星上で活動し、ロケットを打ち上げる
-2. その行為がトリガーとなり、別惑星の状況が変化する
-3. 侵略・拡散したデモリッシャーにより、脅威が増大する
-4. プレイヤーは以下を選択する：
-   - 対応する
-   - 後回しにする
-   - 回避・放棄する
-
-※ 本 Mod では、あまりに協力なデモリッシャーは回避対象として想定している
+- It is not a goal to make all bosses defeatable.
+- It is not a goal to make demolishers enemies that must always be fought.
+- It does not aim for simple numerical strengthening or difficulty inflation.
+- It does not intend to completely destroy existing combat balance.
 
 ---
 
-## 3. システム仕様概要
+## 1. Mod Positioning
 
-### 3.1 ボス級デモリッシャー
-
-- 通常のデモリッシャーとは異なる、
-  **高い耐久・攻撃力・存在感を持つ個体**
-- 複数段階の強さを持つ：
-  - 小型
-  - 中型
-  - 大型
-  - ベヒモス級
-- 段階が上がるほど：
-  - 撃破難易度が上昇
-  - 回避・放置の判断が現実的になる
+- Category: Content addition / Enemy behavior and world-state expansion
+- Target environment: Factorio 2.0+ / Space Age
+- Scope of application:
+  - Planets where demolishers exist
+- Core fantasy:
+  - “The further humanity advances into space, the more dangerous the universe becomes.”
 
 ---
 
-### 3.2 ロケット打ち上げによる侵略拡散
+## 2. Core Player Experience Structure
 
-- ロケットの打ち上げは、
-  **他惑星におけるデモリッシャー活動を活性化させるトリガー**となる
-- 拡散先・影響範囲・強度は、
-  - 惑星の状態
-  - 既存の侵略状況
-  に依存する
+1. The player operates on a planet and launches rockets.
+2. That action acts as a trigger, altering conditions on other planets.
+3. Threats intensify as demolishers invade and spread.
+4. The player must choose among the following:
+   - Respond directly
+   - Postpone action
+   - Avoid or abandon the planet
 
-※ ロケット＝進行度上昇ではなく、  
-※ ロケット＝世界を揺るがす行為、という位置づけ
-※ 厳密にロケット輸送計画を立てる必要に迫られる
-
----
-
-### 3.3 惑星ごとの状態管理
-
-- 惑星単位で以下の状態が管理される：
-  - ボスデモリッシャー撃破済み / 未撃破
-  - 侵略進行中 / 停滞 / 収束
-- 状態に応じて：
-  - 出現個体
-  - 行動傾向
-  - 影響度
-  が変化する
+*In this mod, demolishers that are excessively powerful are explicitly intended to be avoided rather than fought.*
 
 ---
 
-### 3.4 プレイヤー活動への反応
+## 3. System Specification Overview
 
-- 一部の小型のボス級デモリッシャーは、
-  - ロケット発射音
-  に反応して移動・接近する
-- 「放置していれば安全」とは限らない状況を生む
+### 3.1 Boss-class Demolishers
 
----
-
-## 4. 難易度と設計方針
-
-- 難易度設定項目：
-  - 原則として設けない
-- 想定される難易度：
-  - 倒せない敵が存在することを前提とする
-  - 戦わない判断が正解となる場面が存在する
-- 本 Mod における「失敗」：
-  - 基地が壊れることではなく、
-  - 打開困難な状況まで放置すること
+- Entities that differ from normal demolishers by possessing  
+  **high durability, high attack power, and strong presence**.
+- They exist in multiple tiers:
+  - Small
+  - Medium
+  - Large
+  - Behemoth
+- As tiers increase:
+  - Defeat difficulty rises
+  - Avoidance or long-term neglect becomes a more realistic choice
 
 ---
 
-## 5. 互換性ポリシー
+### 3.2 Invasion Spread Triggered by Rocket Launches
 
-- グローバルな敵 AI・挙動は極力変更しない
-- 他 Mod との干渉が生じる場合：
-  - 惑星単位・デモリッシャー関連に限定する
-- 明示的に非対応とする場合は README に記載する
+- Rocket launches act as  
+  **triggers that activate demolisher activity on other planets**.
+- Target destinations, affected range, and intensity depend on:
+  - The state of each planet
+  - Existing invasion conditions
 
----
-
-## 6. セーブデータと決定性
-
-- 使用するグローバルデータ：
-  - storage.manis_boss_demolisher_flag
-- マルチプレイ時の挙動：
-  - 決定性を前提とする
-  - 問題が発生した場合はバグとして扱う
+*Rockets are not merely indicators of progression.*  
+*Rockets are actions that shake the world itself.*  
+*This forces players to plan rocket transportation with strict precision.*
 
 ---
 
-## 7. 開発状況とロードマップ
+### 3.3 Per-planet State Management
 
-- 現在：
-  - 侵略拡散ロジックは実装済み
-  - 惑星ごとの状態管理は安定段階
-- 今後：
-  - 大規模な機能追加は予定しない
-  - バランス調整・互換性調整を中心とする
+- The following states are tracked on a per-planet basis:
+  - Boss demolisher defeated / undefeated
+  - Invasion progressing / stalled / subsiding
+- Depending on the state:
+  - Spawned entities
+  - Behavioral tendencies
+  - Degree of influence  
+  will change accordingly.
 
 ---
 
-## 8. 本 spec の扱い
+### 3.4 Reaction to Player Activity
 
-- 本書は README および Mod Portal の記述より優先される
-- 実装と乖離が生じた場合：
-  - 実装を仕様とみなすか
-  - spec を更新するか
-  を明示的に判断する
+- All demolishers **except giant variants**:
+  - React to rocket launch sounds
+  - Move and approach the source
+- This creates situations where simply “leaving things alone” is not always safe.
+- Giant variants are excluded from this behavior by design,
+  as they are intended to function as **fixed obstacles on the map**.
+
+---
+
+## 4. Difficulty and Design Philosophy
+
+- Difficulty settings:
+  - None are provided by design.
+- Intended difficulty:
+  - The existence of enemies that cannot be defeated is assumed.
+  - There are situations where choosing not to fight is the correct decision.
+- In this mod, “failure” is defined as:
+  - Not the destruction of a base,
+  - But allowing the situation to deteriorate until recovery becomes impractical.
+
+---
+
+## 5. Compatibility Policy
+
+- Global enemy AI and behavior are altered as little as possible.
+- If interference with other mods occurs:
+  - It is limited to planet-level and demolisher-related behavior.
+- Explicit incompatibilities will be documented in the README.
+
+---
+
+## 6. Save Data and Determinism
+
+- Global data used:
+  - `storage.manis_boss_demolisher_flag`
+- Multiplayer behavior:
+  - Determinism is assumed.
+  - Any deviation from deterministic behavior is treated as a bug.
+
+---
+
+## 7. Development Status and Roadmap
+
+- Current state:
+  - Core invasion-spread logic is implemented.
+  - Per-planet state management is stable.
+- Future plans:
+  - No large-scale feature additions are planned.
+  - Focus will remain on balance tuning and compatibility adjustments.
+
+---
+
+## 8. Status of This Specification
+
+- This document takes precedence over the README and Mod Portal descriptions.
+- If discrepancies arise between implementation and this specification:
+  - A conscious decision must be made to treat the implementation as authoritative,
+  - Or to update this specification accordingly.
