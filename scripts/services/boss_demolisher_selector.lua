@@ -82,6 +82,7 @@ function selector.choose_demolisher(surface, ctx)
 	local idx = DRand.random(1, #pool)
 	local name = pool[idx]
 	local cat = Categories.FATAL[name] and "fatal" or "combat"
+	name = strip_alt_suffix(name)
 	if surface.name ~= "vulcanus" then name = name.."-alt" end
 	return { name = name, category = cat }
 end

@@ -6,6 +6,7 @@ local S = {}
 
 local Categories = require("scripts.defines.demolisher_categories")
 local DRand = require("scripts.util.DeterministicRandom")
+local DemolisherQuery = require("__Manis_lib__/scripts/queries/DemolisherQuery")
 
 local function has_in_rect(surface, pos, half, predicate)
   local area = {
@@ -121,29 +122,49 @@ local function choose_cardinal_direction(from_pos, to_pos)
   end
 end
 
+local function calc_export_cap(trigger_evo)
+  local evo = trigger_evo or 0
+  if evo >= 0.99 then
+    return 200
+  end
+  -- evo*100。0だと0になり得るので、最低1にしておく（必要なら0でも可）
+  local cap = math.floor(evo * 100 + 1e-9)
+  if cap < 1 then cap = 1 end
+  return cap
+end
+
 -- ----------------------------
 -- Spawn wrapper
 -- ctx: {surface,name,position,quality,category}
 -- ----------------------------
 function S.spawn(ctx)
-	local surface = ctx and ctx.surface
-	if not surface or not surface.valid then return nil end
-	if not ctx.name or not ctx.position then return nil end
+  local surface = ctx and ctx.surface
+  if not surface or not surface.valid then return nil end
+  if not ctx.name or not ctx.position then return nil end
 
-	local dir = nil
-	if ctx.town_center then
-		dir = choose_cardinal_direction(ctx.position, ctx.town_center)
-	end
+  -- ★追加：輸出上限（dest_surfaceの生存デモリッシャー数）
+  if ctx.trigger_evo ~= nil then
+    local cap = calc_export_cap(ctx.trigger_evo)
+    local demolishers = DemolisherQuery.find_demolishers(surface)
+    if demolishers and #demolishers >= cap then
+      return nil
+    end
+  end
 
-	local ent = surface.create_entity{
-		name     = ctx.name,
-		position = ctx.position,
-		force    = game.forces.enemy,
-		quality  = ctx.quality,
-		direction = dir, -- nilなら省略扱い
-	}
+  local dir = nil
+  if ctx.town_center then
+    dir = choose_cardinal_direction(ctx.position, ctx.town_center)
+  end
 
-	return ent
+  local ent = surface.create_entity{
+    name     = ctx.name,
+    position = ctx.position,
+    force    = game.forces.enemy,
+    quality  = ctx.quality,
+    direction = dir,
+  }
+
+  return ent
 end
 
 return S

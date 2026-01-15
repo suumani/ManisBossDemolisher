@@ -1,7 +1,7 @@
 # Manis Boss Demolisher — Specification (spec)
 
-This document records the **design intent, specifications, and agreed decisions** of Manis Boss Demolisher.  
-Its purpose is to preserve explicit criteria, worldview assumptions, and specification priorities that cannot be fully described in the Mod Portal or README.
+This document records the **design intent, specifications, and agreed rules** of *Manis Boss Demolisher*.  
+Its purpose is to preserve decision criteria, world assumptions, and priority rules that cannot be fully conveyed through the Mod Portal or README.
 
 ---
 
@@ -9,46 +9,46 @@ Its purpose is to preserve explicit criteria, worldview assumptions, and specifi
 
 ### 0.1 Purpose
 
-- To redefine demolishers not as “temporary obstacles,” but as  
-  **primary, planet-scale threats that exert influence across an entire planet**.
-- To transform rocket launches and space expansion into  
-  **decision-making processes that always involve risk**.
-- To strongly encourage the player to consider choices such as:
-  - Planet conquest order
-  - Transportation planning
-  - Abandonment, retreat, or avoidance
+- Redefine Demolishers not as temporary obstacles, but as  
+  **planet-scale, central threats that shape the game world**
+- Transform rocket launches and space expansion into  
+  **decisions that always carry risk**
+- Strongly encourage players to consider:
+  - Planet progression order
+  - Logistics and transport planning
+  - Leaving, delaying, or abandoning planets
 
 ### 0.2 Non-goals
 
-- It is not a goal to make all bosses defeatable.
-- It is not a goal to make demolishers enemies that must always be fought.
-- It does not aim for simple numerical strengthening or difficulty inflation.
-- It does not intend to completely destroy existing combat balance.
+- Making all bosses defeatable is **not** a goal
+- Forcing players to fight Demolishers is **not** a goal
+- Simple numerical inflation or raw difficulty increase is **not** intended
+- Completely destroying the existing combat balance is **not** intended
 
 ---
 
 ## 1. Mod Positioning
 
-- Category: Content addition / Enemy behavior and world-state expansion
+- Category: Content expansion / Enemy behavior & world-state extension
 - Target environment: Factorio 2.0+ / Space Age
-- Scope of application:
-  - Planets where demolishers exist
+- Scope:
+  - Planets where Demolishers exist
 - Core fantasy:
-  - “The further humanity advances into space, the more dangerous the universe becomes.”
+  - *“The further humanity advances into space, the more dangerous the universe becomes.”*
 
 ---
 
-## 2. Core Player Experience Structure
+## 2. Core Player Experience Loop
 
-1. The player operates on a planet and launches rockets.
-2. That action acts as a trigger, altering conditions on other planets.
-3. Threats intensify as demolishers invade and spread.
-4. The player must choose among the following:
-   - Respond directly
-   - Postpone action
-   - Avoid or abandon the planet
+1. The player operates on a planet and launches rockets
+2. That action becomes a trigger that changes conditions on other planets
+3. Invasion and spread of Demolishers increase global threat
+4. The player chooses to:
+   - Respond
+   - Postpone
+   - Avoid or abandon
 
-*In this mod, demolishers that are excessively powerful are explicitly intended to be avoided rather than fought.*
+> In this mod, extremely powerful Demolishers are explicitly designed to be **targets for avoidance**, not mandatory combat.
 
 ---
 
@@ -56,103 +56,128 @@ Its purpose is to preserve explicit criteria, worldview assumptions, and specifi
 
 ### 3.1 Boss-class Demolishers
 
-- Entities that differ from normal demolishers by possessing  
-  **high durability, high attack power, and strong presence**.
-- They exist in multiple tiers:
+- Special individuals distinct from normal Demolishers, featuring  
+  **high durability, attack power, and presence**
+- Multiple strength tiers:
   - Small
   - Medium
   - Large
   - Behemoth
 - As tiers increase:
   - Defeat difficulty rises
-  - Avoidance or long-term neglect becomes a more realistic choice
+  - Avoidance and abandonment become realistic choices
 
 ---
 
-### 3.2 Invasion Spread Triggered by Rocket Launches
+### 3.2 Invasion Spread via Rocket Launches
 
 - Rocket launches act as  
-  **triggers that activate demolisher activity on other planets**.
-- Target destinations, affected range, and intensity depend on:
-  - The state of each planet
+  **triggers that activate Demolisher activity on other planets**
+- Spread targets, range, and intensity depend on:
+  - Planet state
   - Existing invasion conditions
 
-*Rockets are not merely indicators of progression.*  
-*Rockets are actions that shake the world itself.*  
-*This forces players to plan rocket transportation with strict precision.*
+- **Export decision**:  
+  On every rocket launch, the export (invasion spread) event is always evaluated.  
+  It is **not suppressed by probability**.
+
+- **Export cap**:  
+  For each destination planet (`dest_surface`), no new export spawn occurs if the number of **currently living Demolishers** on that planet is greater than or equal to `cap(evo)`.
+  cap(evo) = floor(evo * 100)
+  if evo >= 0.99, then cap = 200
+
+- **Export trigger conditions**:
+- A rocket launch is considered an export trigger if **either** of the following is satisfied:
+  1) The rocket is launched from Vulcanus  
+  2) The rocket is launched from a planet other than Vulcanus, **and** Demolishers have already been defeated on that planet
+
+- **Reference for evo**:
+- The `evo` used for `cap(evo)` is the **evolution factor of the source planet** (`trigger_surface`)
+
+- **Definition of living Demolisher count**:
+- “Living Demolisher count” refers to all entities on the destination planet that:
+  - Belong to the enemy force, and
+  - Are included in `DemolisherNames.ALL`
+
+- **Export message display**:
+- A message indicating export (invasion spread) is displayed at the time of rocket launch
+- Message display is throttled to **at most once every 30 minutes**
+
+> Rockets are not treated as mere progression steps.  
+> Rockets are actions that **shake the world itself**, forcing careful transport planning.
 
 ---
 
 ### 3.3 Per-planet State Management
 
-- The following states are tracked on a per-planet basis:
-  - Boss demolisher defeated / undefeated
-  - Invasion progressing / stalled / subsiding
-- Depending on the state:
-  - Spawned entities
-  - Behavioral tendencies
-  - Degree of influence  
-  will change accordingly.
+- Each planet tracks the following states:
+- Boss Demolisher defeated / not defeated
+- Invasion progressing / stalled / stabilized
+- Depending on state:
+- Spawned entities
+- Behavior tendencies
+- Degree of impact
+may change
 
 ---
 
 ### 3.4 Reaction to Player Activity
 
-- All demolishers **except giant variants**:
-  - React to rocket launch sounds
-  - Move and approach the source
-- This creates situations where simply “leaving things alone” is not always safe.
-- Giant variants are excluded from this behavior by design,
-  as they are intended to function as **fixed obstacles on the map**.
+- All Demolishers except giant-class individuals:
+- React to rocket launch sounds by moving or approaching
+- The design intentionally avoids “safe if ignored” behavior
+- Giant-class Demolishers are treated as fixed large-scale obstacles, and are exempt from this reaction
 
 ---
 
-## 4. Difficulty and Design Philosophy
+## 4. Difficulty and Design Policy
 
 - Difficulty settings:
-  - None are provided by design.
+- Not provided by default
 - Intended difficulty:
-  - The existence of enemies that cannot be defeated is assumed.
-  - There are situations where choosing not to fight is the correct decision.
+- Existence of enemies that cannot be defeated
+- Situations where choosing *not* to fight is the correct decision
 - In this mod, “failure” is defined as:
-  - Not the destruction of a base,
-  - But allowing the situation to deteriorate until recovery becomes impractical.
+- Not base destruction
+- But allowing the situation to deteriorate beyond recovery
 
 ---
 
 ## 5. Compatibility Policy
 
-- Global enemy AI and behavior are altered as little as possible.
-- If interference with other mods occurs:
-  - It is limited to planet-level and demolisher-related behavior.
-- Explicit incompatibilities will be documented in the README.
+- Global enemy AI and behavior are modified as little as possible
+- Interactions with other mods are limited to:
+- Planet-specific behavior
+- Demolisher-related logic
+- Explicit incompatibilities will be documented in the README
 
 ---
 
 ## 6. Save Data and Determinism
 
 - Global data used:
-  - `storage.manis_boss_demolisher_flag`
+- `storage.manis_boss_demolisher_flag`
 - Multiplayer behavior:
-  - Determinism is assumed.
-  - Any deviation from deterministic behavior is treated as a bug.
+- Determinism is assumed
+- Any deviation is treated as a bug
 
 ---
 
 ## 7. Development Status and Roadmap
 
-- Current state:
-  - Core invasion-spread logic is implemented.
-  - Per-planet state management is stable.
-- Future plans:
-  - No large-scale feature additions are planned.
-  - Focus will remain on balance tuning and compatibility adjustments.
+- Current:
+- Invasion spread logic implemented
+- Planet-level state management is stable
+- Future:
+- No large feature additions planned
+- Focus on balance tuning and compatibility adjustments
 
 ---
 
-## 8. Status of This Specification
+## 8. Handling of This Specification
 
-- This document takes precedence over the README and Mod Portal descriptions.
-- If discrepancies arise between implementation and this specification:
-  - A conscious decision must be made to treat the implementation as authoritative,
-  - Or to update this specification accordingly.
+- This document takes precedence over README and Mod Portal descriptions
+- If discrepancies arise between implementation and this spec:
+- Either the implementation is accepted as the new specification, or
+- This document is updated  
+— and the decision must be made explicitly
