@@ -1,11 +1,12 @@
-local EntityNames = require("scripts.defines.EntityNames")
+-- __ManisBossDemolisher__/scripts/defines/demolisher_categories.lua
+local DemolisherNames = require("__Manis_definitions__/scripts/definition/DemolisherNames")
 
 local D = {}
 
-D.FATAL = {
-  [EntityNames.manis_gigantic_big_demolisher] = true,
-  [EntityNames.manis_gigantic_behemoth_demolisher] = true,
-  [EntityNames.manis_crazy_gigantic_king_demolisher] = true,
-}
+D.FATAL = {}
+
+for _, name in ipairs(DemolisherNames.ALL_FATAL) do
+  D.FATAL[name] = true
+end
 
 return D

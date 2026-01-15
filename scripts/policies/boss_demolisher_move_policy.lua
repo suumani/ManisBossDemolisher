@@ -1,27 +1,44 @@
 -- __ManisBossDemolisher__/scripts/policies/boss_demolisher_move_policy.lua
 local Policy = {}
 
-local EntityNames = require("scripts.defines.EntityNames")
+local DemolisherNames = require("__Manis_definitions__/scripts/definition/DemolisherNames")
 
 -- 惑星別の移動対象
 function Policy.get_target_names(surface_name)
   if surface_name == "vulcanus" or surface_name == "fulgora" then
-    return EntityNames.ALL_BOSS_DEMOLISHERS
+    return DemolisherNames.ALL_BOSS
   end
-  return EntityNames.ALL_COMBAT_DEMOLISHERS
+  return DemolisherNames.ALL_COMBAT
 end
 
 -- 進化度による移動可否（BossMod固有）
 local thresholds = {
-  [EntityNames.small_demolisher] = 0.4,
-  [EntityNames.medium_demolisher] = 0.7,
-  [EntityNames.big_demolisher] = 0.9,
+  [DemolisherNames.SMALL] = 0.05,
+  [DemolisherNames.MANIS_SMALL] = 0.05,
+  [DemolisherNames.MANIS_SMALL_ALT] = 0.05,
 
-  [EntityNames.manis_behemoth_demolisher] = 0.95,
-  [EntityNames.manis_speedstar_small_demolisher] = 0.85,
-  [EntityNames.manis_speedstar_medium_demolisher] = 0.90,
-  [EntityNames.manis_speedstar_big_demolisher] = 0.95,
-  [EntityNames.manis_speedstar_behemoth_demolisher] = 0.99,
+  [DemolisherNames.MEDIUM] = 0.2,
+  [DemolisherNames.MANIS_MEDIUM] = 0.2,
+  [DemolisherNames.MANIS_MEDIUM_ALT] = 0.2,
+
+  [DemolisherNames.BIG] = 0.4,
+  [DemolisherNames.MANIS_BIG] = 0.4,
+  [DemolisherNames.MANIS_BIG_ALT] = 0.4,
+
+  [DemolisherNames.MANIS_BEHEMOTH] = 0.6,
+  [DemolisherNames.MANIS_BEHEMOTH_ALT] = 0.6,
+
+  [DemolisherNames.MANIS_SPEEDSTAR_SMALL] = 0.25,
+  [DemolisherNames.MANIS_SPEEDSTAR_SMALL_ALT] = 0.25,
+
+  [DemolisherNames.MANIS_SPEEDSTAR_MEDIUM] = 0.45,
+  [DemolisherNames.MANIS_SPEEDSTAR_MEDIUM_ALT] = 0.45,
+
+  [DemolisherNames.MANIS_SPEEDSTAR_BIG] = 0.65,
+  [DemolisherNames.MANIS_SPEEDSTAR_BIG_ALT] = 0.65,
+
+  [DemolisherNames.MANIS_SPEEDSTAR_BEHEMOTH] = 0.85,
+  [DemolisherNames.MANIS_SPEEDSTAR_BEHEMOTH_ALT] = 0.85,
 }
 
 function Policy.can_move(name, evo)

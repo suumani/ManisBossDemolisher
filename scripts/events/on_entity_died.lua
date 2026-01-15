@@ -3,8 +3,6 @@
 -- デモリッシャー撃破フラグ更新
 -- ----------------------------
 
-local EntityNames = require("scripts.defines.EntityNames")
-
 script.on_event(defines.events.on_entity_died, function(event)
     local entity = event.entity
 

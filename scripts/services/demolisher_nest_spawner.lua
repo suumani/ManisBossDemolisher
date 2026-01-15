@@ -1,8 +1,8 @@
--- scripts/services/demolisher_nest_spawner.lua
+-- __ManisBossDemolisher__/scripts/services/demolisher_nest_spawner.lua
 local N = {}
 
-local EntityNames = require("scripts.defines.EntityNames")
 local DRand = require("scripts.util.DeterministicRandom")
+local DemolisherQuery = require("__Manis_lib__/scripts/queries/DemolisherQuery")
 
 -- ----------------------------
 -- 共通ユーティリティ
@@ -25,10 +25,7 @@ local function spawn_near(surface, name, center, r)
 end
 
 local function find_demolishers(surface)
-  return surface.find_entities_filtered{
-    force = game.forces.enemy,
-    name  = EntityNames.ALL_DEMOLISHERS
-  }
+  return DemolisherQuery.find_demolishers(surface)
 end
 
 -- ----------------------------
@@ -54,7 +51,11 @@ function N.spawn_nauvis(surface)
       if eggraft and DRand.random() < 0.01 then
         name = eggraft
       else
-        name = biter_spawner
+        if DRand.random() < 0.5 then
+          name = biter_spawner
+        else
+          name = spitter_spawner
+        end
       end
 
       if name then
