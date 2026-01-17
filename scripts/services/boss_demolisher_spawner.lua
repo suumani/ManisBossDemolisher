@@ -8,6 +8,29 @@ local Categories = require("scripts.defines.demolisher_categories")
 local DRand = require("scripts.util.DeterministicRandom")
 local DemolisherQuery = require("__Manis_lib__/scripts/queries/DemolisherQuery")
 
+-- ★追加：禁則範囲と押し出し座標
+local FORBIDDEN_HALF = 400
+local PUSH_TO = 450
+
+local function is_in_forbidden_rect(pos)
+  return pos
+    and pos.x >= -FORBIDDEN_HALF and pos.x <= FORBIDDEN_HALF
+    and pos.y >= -FORBIDDEN_HALF and pos.y <= FORBIDDEN_HALF
+end
+
+-- 禁則内なら、x or y のどちらかを ±450 にして禁則外へ押し出す
+local function push_out_of_forbidden(pos)
+  if not is_in_forbidden_rect(pos) then return pos end
+
+  -- どちらを固定するかはランダム（要望の「x±450 or y±450」）
+  if DRand.random(1, 2) == 1 then
+    pos.x = (DRand.random(0, 1) == 0) and -PUSH_TO or PUSH_TO
+  else
+    pos.y = (DRand.random(0, 1) == 0) and -PUSH_TO or PUSH_TO
+  end
+  return pos
+end
+
 local function has_in_rect(surface, pos, half, predicate)
   local area = {
     { pos.x - half, pos.y - half },
@@ -65,7 +88,7 @@ function S.choose_position(surface, opts)
   local force = game.forces.player
   local aabb = get_charted_aabb_chunks(surface, force)
   if not aabb then
-    return { x = 0, y = 0 }
+    return nil
   end
 
   -- margin: charted外周から何チャンク外に出すか
@@ -101,6 +124,8 @@ function S.choose_position(surface, opts)
     local cx, cy = choose_chunk_on_side(side)
     local pos = tile_center_of_chunk(cx, cy)
 
+    -- ★追加：禁則内なら外周へ押し出す
+    pos = push_out_of_forbidden(pos)
     -- 密度capチェック
     if not has_in_rect(surface, pos, half, predicate) then
       return pos
