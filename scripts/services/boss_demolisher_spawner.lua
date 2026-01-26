@@ -1,6 +1,6 @@
 -- ----------------------------
 -- Spawn / Positioning
--- scripts/services/boss_demolisher_spawner.lua
+-- __ManisBossDemolisher__/scripts/services/boss_demolisher_spawner.lua
 -- ----------------------------
 local S = {}
 
@@ -150,10 +150,10 @@ end
 local function calc_export_cap(trigger_evo)
   local evo = trigger_evo or 0
   if evo >= 0.99 then
-    return 200
+    return 20
   end
-  -- evo*100。0だと0になり得るので、最低1にしておく（必要なら0でも可）
-  local cap = math.floor(evo * 100 + 1e-9)
+  -- evo*10。0だと0になり得るので、最低1にしておく（必要なら0でも可）
+  local cap = math.floor(evo * 10 + 1e-9)
   if cap < 1 then cap = 1 end
   return cap
 end

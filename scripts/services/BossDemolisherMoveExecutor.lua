@@ -29,6 +29,8 @@ function E.execute_one_step(plan)
     compute_move_rate = MovePolicy.compute_move_rate,
     can_move = MovePolicy.can_move,
     get_rng = function() return ModRandomProvider.get() end,
+    mod_name = "ManisBossDemolisher",
+    log = log,
   })
 end
 

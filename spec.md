@@ -83,8 +83,8 @@ Its purpose is to preserve decision criteria, world assumptions, and priority ru
 
 - **Export cap**:  
   For each destination planet (`dest_surface`), no new export spawn occurs if the number of **currently living Demolishers** on that planet is greater than or equal to `cap(evo)`.
-  cap(evo) = floor(evo * 100)
-  if evo >= 0.99, then cap = 200
+  cap(evo) = floor(evo * 10)
+  if evo >= 0.99, then cap = 20
 
 - **Export trigger conditions**:
 - A rocket launch is considered an export trigger if **either** of the following is satisfied:
