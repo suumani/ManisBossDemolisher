@@ -6,10 +6,10 @@ local util = {}
 
 -- デバッグ出力フラグ
 -- リリース時は必ず false にすること！
-util.DEBUG_ENABLED = true
+util.DEBUG_ENABLED = false
 
 -- リリース時は必ず false にすること！
-util.TEST_RUNNER_ENABLED = true
+util.TEST_RUNNER_ENABLED = false
 
 function util.print(msg)
   if game and msg then
