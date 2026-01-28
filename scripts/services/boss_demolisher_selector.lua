@@ -1,5 +1,6 @@
+-- __ManisBossDemolisher__/scripts/services/boss_demolisher_selector.lua
 -- ----------------------------
--- 抽選 scripts/services/boss_demolisher_selector.lua
+-- 抽選 
 -- ----------------------------
 local selector = {}
 

@@ -1,4 +1,4 @@
--- scripts/services/town_center_resolver.lua
+-- __ManisBossDemolisher__/scripts/services/town_center_resolver.lua
 local R = {}
 
 local function dist2(p)

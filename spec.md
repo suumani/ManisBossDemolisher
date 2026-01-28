@@ -1,4 +1,6 @@
-# Manis Boss Demolisher — Specification (spec)
+# __ManisBossDemolisher__/spec.md
+
+# Manis Boss Demolisher — Specification（spec v.0.1.5）
 
 This document records the **design intent, specifications, and agreed rules** of *Manis Boss Demolisher*.  
 Its purpose is to preserve decision criteria, world assumptions, and priority rules that cannot be fully conveyed through the Mod Portal or README.
@@ -69,42 +71,56 @@ Its purpose is to preserve decision criteria, world assumptions, and priority ru
 
 ---
 
-### 3.2 Invasion Spread via Rocket Launches
+### 3.2 Invasion Spread via Rocket Launches (Updated)
 
-- Rocket launches act as  
-  **triggers that activate Demolisher activity on other planets**
-- Spread targets, range, and intensity depend on:
-  - Planet state
-  - Existing invasion conditions
+- Rocket launches act as **global invasion triggers**
+- Every launch is evaluated; the system does not rely on random suppression
 
-- **Export decision**:  
-  On every rocket launch, the export (invasion spread) event is always evaluated.  
-  It is **not suppressed by probability**.
+#### Export Spawn Conditions
 
-- **Export cap**:  
-  For each destination planet (`dest_surface`), no new export spawn occurs if the number of **currently living Demolishers** on that planet is greater than or equal to `cap(evo)`.
-  cap(evo) = floor(evo * 10)
-  if evo >= 0.99, then cap = 20
+For each destination planet (`dest_surface`), export spawning is governed by
+**dynamic per-planet population caps**, not a fixed formula.
 
-- **Export trigger conditions**:
-- A rocket launch is considered an export trigger if **either** of the following is satisfied:
-  1) The rocket is launched from Vulcanus  
-  2) The rocket is launched from a planet other than Vulcanus, **and** Demolishers have already been defeated on that planet
+Export spawning is skipped if **any relevant cap is reached**.
 
-- **Reference for evo**:
-- The `evo` used for `cap(evo)` is the **evolution factor of the source planet** (`trigger_surface`)
+#### Cap Model (Boss Demolisher)
 
-- **Definition of living Demolisher count**:
-- “Living Demolisher count” refers to all entities on the destination planet that:
-  - Belong to the enemy force, and
+Manis Boss Demolisher uses a **dual-cap system**:
+
+- **Global Cap (Combat Cap)**  
+  Limits the total number of Demolishers on a planet  
+  (includes both Combat and Fatal classes)
+
+- **Fatal Cap**  
+  Limits only Fatal-class Demolishers  
+  (does not include Combat-class Demolishers)
+
+Both caps:
+- Are evaluated **per planet**
+- Include **physical + virtual entities**
+- Are dynamically reduced by research
+
+#### Research Interaction
+
+The infinite research  
+`manis-demolisher-cap-down`  
+reduces both caps by **5% per level**, down to fixed minimums.
+
+- Global Cap minimum: **10**
+- Fatal Cap minimum: **10**
+
+#### Definition of “Living Demolisher Count”
+
+A “living Demolisher” includes:
+
+- All physical entities on the planet that:
+  - Belong to the enemy force
   - Are included in `DemolisherNames.ALL`
+- All virtual (deferred) Demolishers registered for that planet
 
-- **Export message display**:
-- A message indicating export (invasion spread) is displayed at the time of rocket launch
-- Message display is throttled to **at most once every 30 minutes**
-
-> Rockets are not treated as mere progression steps.  
-> Rockets are actions that **shake the world itself**, forcing careful transport planning.
+Virtual entities are counted to prevent:
+- Silent cap bypass
+- Burst spawns after chunk generation
 
 ---
 
@@ -127,6 +143,54 @@ may change
 - React to rocket launch sounds by moving or approaching
 - The design intentionally avoids “safe if ignored” behavior
 - Giant-class Demolishers are treated as fixed large-scale obstacles, and are exempt from this reaction
+
+### 3.5 Virtual Entity Handling
+
+Manis Boss Demolisher fully supports **Virtual Entity Management**
+as defined in Manis_lib.
+
+#### Purpose
+
+Boss Demolishers may:
+- Spawn outside charted areas
+- Move into ungenerated chunks
+- Be deferred due to spawn safety constraints
+
+To prevent:
+- Entity loss
+- Duplication
+- Cap miscalculation
+
+all such Demolishers are stored as **virtual entities** until safe to materialize.
+
+#### Rules
+
+- Virtual Demolishers:
+  - Are counted toward all caps
+  - Are materialized automatically on chunk generation
+- Virtual entities are not shared across mods
+- Identity persistence across Phy ↔ Virt transitions is **not guaranteed**
+
+### 3.6 Combat vs Fatal Classification
+
+Manis Boss Demolisher distinguishes Demolishers by **impact class**, not by lore tier.
+
+- **Combat-class Demolishers**
+  - Mobile
+  - React to player actions
+  - Subject to Global Cap only
+
+- **Fatal-class Demolishers**
+  - Extreme size or movement impact
+  - Often treated as immovable obstacles
+  - Subject to both:
+    - Global Cap
+    - Fatal Cap
+
+This classification is used consistently for:
+- Spawn limits
+- Movement logic
+- Performance safety
 
 ---
 
@@ -153,13 +217,19 @@ may change
 
 ---
 
-## 6. Save Data and Determinism
+## 6. Save Data and Determinism (Updated)
 
 - Global data used:
-- `storage.manis_boss_demolisher_flag`
+  - `storage.manis_boss_demolisher_flag`
+  - Virtual entity storage (via Manis_lib)
+
+- Virtual entities are:
+  - Fully serialized
+  - Deterministically restored
+
 - Multiplayer behavior:
-- Determinism is assumed
-- Any deviation is treated as a bug
+  - Determinism is strictly required
+  - Desync related to virtual handling is treated as a critical bug
 
 ---
 

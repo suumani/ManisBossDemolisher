@@ -1,6 +1,6 @@
+-- __ManisBossDemolisher__/scripts/services/surface_bounds_tracker.lua
 -- ----------------------------
 -- Surface bounds tracking (AABB)
--- scripts/services/surface_bounds_tracker.lua
 -- ----------------------------
 local M = {}
 

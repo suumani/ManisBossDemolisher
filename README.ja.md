@@ -1,4 +1,6 @@
-# Manis Boss Demolisher
+# __ManisBossDemolisher__/README.ja.md
+
+# Manis Boss Demolisher（spec v.0.1.5）
 [英語版はこちら / English version](README.md)
 
 ## 概要

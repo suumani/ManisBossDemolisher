@@ -1,6 +1,6 @@
+-- __ManisBossDemolisher__/scripts/services/quality_assigner.lua
 -- ----------------------------
 -- Quality assigner
--- scripts/services/quality_assigner.lua
 -- ----------------------------
 local Q = {}
 

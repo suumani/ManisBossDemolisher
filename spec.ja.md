@@ -1,4 +1,6 @@
-# Manis Boss Demolisher — 仕様書（spec）
+# __ManisBossDemolisher__/spec.ja.md
+
+# Manis Boss Demolisher — 仕様書（spec v.0.1.5）
 
 本書は Manis Boss Demolisher の **設計意図・仕様・合意事項** を記録するためのドキュメントである。  
 Mod Portal や README では説明しきれない「判断基準」「世界観上の前提」「仕様の優先順位」を保持することを目的とする。

@@ -1,4 +1,4 @@
--- scripts/services/boss_demolisher_probability.lua
+-- __ManisBossDemolisher__/scripts/services/boss_demolisher_probability.lua
 local P = {}
 
 local DRand = require("scripts.util.DeterministicRandom")
