@@ -12,6 +12,8 @@
         "quality >= 2.0.0",
         "space-age >= 2.0.0",
         "Manis_lib >= 0.1.5",
-        "Manis_definitions >= 0.0.7"
+        "Manis_definitions >= 0.0.7",
+        "? Manis_TestFramework >= 0.0.1",
+        "? Manis_Logger >= 0.0.1"
     ]
 }

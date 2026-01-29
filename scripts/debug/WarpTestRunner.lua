@@ -7,7 +7,7 @@ local PlanRunner = require("scripts.services.BossDemolisherMovePlanRunner")
 local PlanStore  = require("scripts.services.BossDemolisherMovePlanStore")
 local VirtualMgr = require("__Manis_lib__/scripts/managers/VirtualEntityManager")
 local MovePolicy = require("scripts.policies.boss_demolisher_move_policy") -- モンキーパッチ用
-local util       = require("scripts.common.util")
+local Logger = require("scripts.services.Logger")
 
 -- ■ 設定
 local TEST_SURFACE_NAME = "nauvis"
@@ -190,25 +190,25 @@ end
 
 -- ■ メイン実行部
 function Runner.run()
-    util.debug("# WarpTestRunner Report")
+    Logger.debug("# WarpTestRunner Report")
     
     local r1 = test_phy_to_phy()
-    util.debug(string.format(" - [%s] Physical -> Physical (Charted -> Charted)", r1))
+    Logger.debug(string.format(" - [%s] Physical -> Physical (Charted -> Charted)", r1))
     
     local r2 = test_phy_to_virt()
-    util.debug(string.format(" - [%s] Physical -> Virtual  (Charted -> Uncharted)", r2))
+    Logger.debug(string.format(" - [%s] Physical -> Virtual  (Charted -> Uncharted)", r2))
     
     local r3 = test_virt_to_phy()
-    util.debug(string.format(" - [%s] Virtual  -> Physical (Uncharted -> Charted)", r3))
+    Logger.debug(string.format(" - [%s] Virtual  -> Physical (Uncharted -> Charted)", r3))
     
     local r4 = test_virt_to_virt()
-    util.debug(string.format(" - [%s] Virtual  -> Virtual  (Uncharted -> Uncharted)", r4))
+    Logger.debug(string.format(" - [%s] Virtual  -> Virtual  (Uncharted -> Uncharted)", r4))
     
-    util.debug("---------------------------------------------------")
+    Logger.debug("---------------------------------------------------")
     if r1=="OK" and r2=="OK" and r3=="OK" and r4=="OK" then
-        util.debug("All 4 tests passed.")
+        Logger.debug("All 4 tests passed.")
     else
-        util.debug("Some tests failed.")
+        Logger.debug("Some tests failed.")
     end
 end
 

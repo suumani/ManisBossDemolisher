@@ -9,8 +9,8 @@ local VirtualMgr   = require("__Manis_lib__/scripts/managers/VirtualEntityManage
 local DemolisherQuery = require("__Manis_lib__/scripts/queries/DemolisherQuery")
 local MovePolicy   = require("scripts.policies.boss_demolisher_move_policy")
 local ModRandomProvider = require("scripts.services.ModRandomProvider")
-local util         = require("scripts.common.util")
 local Categories   = require("scripts.defines.demolisher_categories")
+local Logger       = require("scripts.services.Logger")
 
 -- ■ Adapter Factory
 -- 第4引数 id_or_nil は内部で obj.id を見るため削除
@@ -122,7 +122,7 @@ local function build_move_targets(surface, area, ctx)
     end
 
     -- ★修正(2): 正確な内訳ログ
-    util.debug(string.format("[MoveExecutor] Targets: Phys=%d, Virt=%d", count_phys, count_virt))
+    Logger.debug(string.format("[MoveExecutor] Targets: Phys=%d, Virt=%d", count_phys, count_virt))
 
     return adapters
 end
@@ -146,7 +146,7 @@ function E.execute_one_step(plan)
 
         get_rng = function() return ModRandomProvider.get() end,
         mod_name = "ManisBossDemolisher",
-        log = util.debug
+        log = Logger.debug
     })
 end
 

@@ -14,7 +14,7 @@ local selector    = require("scripts.services.boss_demolisher_selector")
 local spawner     = require("scripts.services.boss_demolisher_spawner")
 local probability = require("scripts.services.boss_demolisher_probability")
 local quality     = require("scripts.services.quality_assigner")
-local util        = require("scripts.common.util")
+local Logger = require("scripts.services.Logger")
 local TownCenter  = require("scripts.services.town_center_resolver")
 local CapManager  = require("scripts.services.boss_demolisher_cap_manager")
 local DemolisherQuery = require("__Manis_lib__/scripts/queries/DemolisherQuery")
@@ -64,7 +64,7 @@ function boss_demolisher_control.on_rocket_launched_export(ctx)
 
   -- メッセージ表示
   if not storage.manis_export_message_suppressed then
-    util.print({"mani-boss-demolisher-message.boss-demolisher-exported"})
+    Logger.print({"mani-boss-demolisher-message.boss-demolisher-exported"})
     storage.manis_export_message_suppressed = true
   end
 
@@ -97,19 +97,19 @@ function boss_demolisher_control.on_rocket_launched_export(ctx)
   if is_fatal_pick then
       -- Fatalは単独上限を超えるか、または全体上限を超えるとアウト
       if cur_fatal >= fatal_cap then
-          util.debug(string.format("[Skip] Fatal Cap Reached on %s. Fatal:%d >= Cap:%d", 
+          Logger.debug(string.format("[Skip] Fatal Cap Reached on %s. Fatal:%d >= Cap:%d", 
               dest_surface.name, cur_fatal, fatal_cap))
           return
       end
       if cur_total >= global_cap then
-           util.debug(string.format("[Skip] Global Cap Reached (Fatal spawn) on %s. Total:%d >= Cap:%d", 
+           Logger.debug(string.format("[Skip] Global Cap Reached (Fatal spawn) on %s. Total:%d >= Cap:%d", 
               dest_surface.name, cur_total, global_cap))
           return
       end
   else
       -- Combat(Non-Fatal)は全体上限のみチェック
       if cur_total >= global_cap then
-          util.debug(string.format("[Skip] Global Cap Reached on %s. Total:%d >= Cap:%d", 
+          Logger.debug(string.format("[Skip] Global Cap Reached on %s. Total:%d >= Cap:%d", 
               dest_surface.name, cur_total, global_cap))
           return
       end
@@ -119,7 +119,7 @@ function boss_demolisher_control.on_rocket_launched_export(ctx)
   -- 4) 配置位置
   local position = spawner.choose_position(dest_surface, { category = pick.category, name = pick.name })
   if not position then 
-      util.debug("[Fail] No valid position found (even with forced bounds).")
+      Logger.debug("[Fail] No valid position found (even with forced bounds).")
       return 
   end
 
@@ -148,7 +148,7 @@ function boss_demolisher_control.on_rocket_launched_export(ctx)
 
   if result then
     local mode = result.virtual and "Virtually" or "Physically"
-    util.debug({"", "[", dest_surface.name, "] ", mode, " Spawned: ", {"entity-name." .. pick.name},
+    Logger.debug({"", "[", dest_surface.name, "] ", mode, " Spawned: ", {"entity-name." .. pick.name},
                 " pos={", position.x, ", ", position.y, "}"})
 
     -- 出現済みフラグ更新
@@ -157,7 +157,7 @@ function boss_demolisher_control.on_rocket_launched_export(ctx)
     storage.manis_boss_demolisher_flag[dest_surface.name] = storage.manis_boss_demolisher_flag[dest_surface.name] or {}
     storage.manis_boss_demolisher_flag[dest_surface.name][entity_base_name] = true
   else
-    util.debug("[Fail] Spawn failed (Internal error).")
+    Logger.debug("[Fail] Spawn failed (Internal error).")
   end
 end
 
