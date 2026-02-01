@@ -64,7 +64,7 @@ function boss_demolisher_control.on_rocket_launched_export(ctx)
 
   -- メッセージ表示
   if not storage.manis_export_message_suppressed then
-    Logger.print({"mani-boss-demolisher-message.boss-demolisher-exported"})
+    Logger.debug({"mani-boss-demolisher-message.boss-demolisher-exported"})
     storage.manis_export_message_suppressed = true
   end
 
@@ -124,15 +124,15 @@ function boss_demolisher_control.on_rocket_launched_export(ctx)
   end
 
   -- 5) 品質
-  local source_evo = 0
-  if trigger_surface.index then 
-      source_evo = game.forces.enemy.get_evolution_factor(trigger_surface)
+  local dest_evo = 0
+  if dest_surface and dest_surface.valid then
+      dest_evo = game.forces.enemy.get_evolution_factor(dest_surface)
   end
   
   local q = quality.choose(dest_surface, {
     entity_name = pick.name,
     category = pick.category,
-    source_evo = source_evo,
+    dest_evo = dest_evo,
   })
 
   -- 6) 生成実行
