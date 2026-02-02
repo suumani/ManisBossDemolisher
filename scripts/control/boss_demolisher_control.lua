@@ -108,7 +108,7 @@ function boss_demolisher_control.on_rocket_launched_export(ctx)
   if is_fatal_pick then
     -- Fatal cap checks fatal count only
     if cur_fatal >= fatal_cap then
-      Logger.debug(string.format(
+      Logger.info(string.format(
         "[Skip] Fatal Cap Reached on %s. Fatal:%d >= Cap:%d (Total:%d Combat:%d)",
         dest_surface.name, cur_fatal, fatal_cap, cur_total, cur_nonfatal
       ))
@@ -117,7 +117,7 @@ function boss_demolisher_control.on_rocket_launched_export(ctx)
   else
     -- Combat cap checks total (combat + fatal)
     if cur_total >= combat_cap then
-      Logger.debug(string.format(
+      Logger.info(string.format(
         "[Skip] Combat Cap Reached on %s. Total:%d >= Cap:%d (Combat:%d Fatal:%d FatalCap:%d)",
         dest_surface.name, cur_total, combat_cap, cur_nonfatal, cur_fatal, fatal_cap
       ))
@@ -136,10 +136,16 @@ function boss_demolisher_control.on_rocket_launched_export(ctx)
     position = spawner.choose_position(dest_surface, { category = pick.category, name = pick.name })
   end
 
-  if not position then
-    Logger.debug("[Fail] No valid position found.")
-    return
-  end
+ if not position then
+   Logger.info({
+     "[Export][Skip]",
+     " reason=no_valid_position",
+     " dest=", dest_surface.name,
+     " category=", pick.category or "unknown",
+     " name=", pick.name or "unknown",
+   })
+   return
+ end
 
   -- 5) 品質
   local dest_evo = 0
@@ -166,8 +172,13 @@ function boss_demolisher_control.on_rocket_launched_export(ctx)
 
   if result then
     local mode = result.virtual and "Virtually" or "Physically"
-    Logger.debug({"", "[", dest_surface.name, "] ", mode, " Spawned: ", {"entity-name." .. pick.name},
-                " pos={", position.x, ", ", position.y, "}"})
+    Logger.info({
+      "[Export][Result]",
+      " dest=", dest_surface.name,
+      " kind=", (result.virtual and "virt" or "phy"),
+      " name=", pick.name,
+      " pos={", position.x, ",", position.y, "}",
+    })
 
     -- 出現済みフラグ更新
     local entity_base_name = pick.name
