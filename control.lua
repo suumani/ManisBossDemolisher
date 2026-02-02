@@ -6,7 +6,7 @@ require("scripts.events.on_nth_tick_30min")
 require("scripts.events.on_rocket_launched")
 
 -- tests (release build: comment out)
-require("scripts.tests.mbd_test_command")
+--[[require("scripts.tests.mbd_test_command")
 require("scripts.tests.infrastructure.DeferredTestPump")
 require("scripts.tests.packs.export.PackExportBasic")
 require("scripts.tests.packs.export.PackExportQuality")
@@ -16,10 +16,7 @@ require("scripts.tests.packs.export.PackExportProgressionWorld")
 require("scripts.tests.packs.defeated.PackDefeatedFlag")
 require("scripts.tests.packs.interaction.PackExportMoveInteraction")
 require("scripts.debug.mbd_audit_commands")
-
-
-
-require("scripts.tests.packs.move.PackMoveSchedule")
+require("scripts.tests.packs.move.PackMoveSchedule")]]
 
 local function migrate_defeated_flag()
   -- Old key: storage.manis_demolisher_killed_surface[surface_name] = true|false

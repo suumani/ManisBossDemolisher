@@ -8,6 +8,8 @@
 -- ------------------------------------------------------------
 local L = {}
 
+util = require("__ManisBossDemolisher__/scripts/common/util.lua")
+
 local TAG = "ManisBossDemolisher"
 local SOURCE_KEY = "manisbossdemolisher"
 
@@ -30,9 +32,9 @@ local function emit(level, msg, player_index)
   end
 end
 
-function L.debug(msg, player_index) emit("debug", msg, player_index) end
-function L.info(msg, player_index)  emit("info",  msg, player_index) end
-function L.warn(msg, player_index)  emit("warn",  msg, player_index) end
-function L.error(msg, player_index) emit("error", msg, player_index) end
+function L.debug(msg, player_index) if not util.DEBUG_ENABLED then return end emit("debug", msg, player_index) end
+function L.info(msg, player_index)  if not util.DEBUG_ENABLED then return end emit("info",  msg, player_index) end
+function L.warn(msg, player_index)  if not util.DEBUG_ENABLED then return end emit("warn",  msg, player_index) end
+function L.error(msg, player_index) if not util.DEBUG_ENABLED then return end emit("error", msg, player_index) end
 
 return L

@@ -4,7 +4,7 @@ data:extend({
     type = "string-setting",
     name = "manisbossdemolisher-logger-level",
     setting_type = "runtime-global",
-    default_value = "debug",
+    default_value = "off",
     allowed_values = { "off", "error", "warn", "info", "debug" },
     order = "z[manisbossdemolisher]-a[logger]-a[level]"
   },
