@@ -22,7 +22,7 @@ docs/SystemSpecification/02_PlanetStateModel.md（Draft v0.1）
  - 用途：Export の発生条件に利用される
 
 #### 保存
- - storage.manis_boss_demolisher_flag[surface_name].defeated = true|false
+ - storage.manis_boss_demolisher_flag[...].defeated
 
 ### PP-IMP-001: Importable（輸入可能）
  - 定義：プレイヤーが到着し、surfaceが生成されている惑星は Importable である
@@ -32,8 +32,8 @@ docs/SystemSpecification/02_PlanetStateModel.md（Draft v0.1）
 
 #### 保存
 
-storage.manis_boss_demolisher_flag[surface_name].importable = true|false
-あるいは importable は再計算可能なら保存しない（要決定）
+※ Importable は永続化しない  
+※ 常に game.surfaces[surface_name] ~= nil により再計算する
 
 ### PP-SPEC-001: Species Policy（種別選定ポリシー）
 

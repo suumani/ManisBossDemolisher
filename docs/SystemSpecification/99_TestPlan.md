@@ -58,9 +58,9 @@ Manis Boss Demolisher は、Factorio が提供する各種イベントを起点�
 
 ---
 
-## 2. テスト実装方式（3分割）
+## 2. テスト実装方式（4分割）
 
-本プロジェクトでは、以下 **3種類のテスト方式**を併用する。
+本プロジェクトでは、以下 **4種類のテスト方式**を併用する。
 
 ---
 
@@ -70,6 +70,7 @@ Manis Boss Demolisher は、Factorio が提供する各種イベントを起点�
 - テストコマンドで即時実行
 - stub / fake を多用
 - イベントや時間経過に依存しない
+- 乱数制御は hook 経由
 
 **目的**
 - Export 選定
@@ -113,6 +114,42 @@ Manis Boss Demolisher は、Factorio が提供する各種イベントを起点�
 
 ---
 
+### TP-MODE-004: 確率吸収テスト（Probabilistic Absorption）
+**概要**
+- 決定論的だが単発では観測できない挙動を対象とする
+- Nステップ / Kプランの試行により結果を吸収する
+
+**対象例**
+- Move における Phys / Vir 遷移
+- 距離ロール・セル順シャッフル
+---
+
+### TP-MODE-005: 時間遅延テスト（Deferred / Tick-bridged）
+
+**概要**
+- ゲームイベントが「次の tick」または「非同期処理後」に反映される挙動を検証する
+- 即時 assert を行わず、Deferred Runner を介して検証を行う
+
+**対象例**
+- on_entity_died による Defeated フラグ更新
+- 非同期 MovePlan 生成
+- イベント連鎖（Export → Move）
+
+**設計原則**
+- tick を直接進める API は使用しない
+- nth_tick をテストごとに乱立させない
+- テスト基盤が **単一の tick pump** を管理する
+
+**合否判定**
+- 次 tick 以降の世界状態を主審とする
+- ログは補助情報とする
+
+**禁止事項**
+- テスト内で独自に on_nth_tick を登録する
+- 即時失敗を前提にした busy-wait / 多重 defer
+
+---
+
 ## 3. 時間粒度とスケジューラ運用
 
 ### TP-TIME-001: 時間粒度
@@ -153,6 +190,10 @@ Test Pack は以下を定義する：
 
 - APIからの環境構築が困難
 - 特定の進行状態を再現する必要がある
+- 専用 surface の生成
+- Chunk 生成状態の制御
+- VirtualEntityManager のクリア
+- MovePlanStore 等、テスト所有一時状態のクリア
 
 ---
 
@@ -187,6 +228,12 @@ Test Pack は以下を定義する：
 - 世界状態（位置変化、個体数）
 - 補助：Moveログ
 
+**検証内容**
+- Phys → Phys
+- Phys → Vir
+- Vir → Phys
+- Vir → Vir
+- 距離制約（1移動あたり）
 ---
 
 ### PACK-EXPORT-CAP-EDGE

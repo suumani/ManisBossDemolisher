@@ -4,13 +4,13 @@
 -- ----------------------------
 local Q = {}
 
-local QualityNames = require("__Manis_lib__/scripts/definition/QualityNames")
 local DRand = require("scripts.util.DeterministicRandom")
 local QualityRoller = require("__Manis_lib__/scripts/rollers/QualityRoller")
+local TestHooks = require("scripts.tests.infrastructure.TestHooks")
 
 -- Responsibility:
 -- Decide entity quality on spawn.
--- Rule: first time per (surface, entity_name) => "normal", otherwise random.
+-- Rule: first time per (surface, name) => "normal", otherwise random.
 function Q.choose(surface, opts)
   opts = opts or {}
   local entity_name = opts.entity_name
@@ -25,7 +25,12 @@ function Q.choose(surface, opts)
   if not seen then
     return "normal"
   end
-  return QualityRoller.choose_quality(opts.source_evo, DRand.random())
+
+  local r = TestHooks.try_get_export_quality_roll_override()
+  if type(r) ~= "number" then
+    r = DRand.random()
+  end
+  return QualityRoller.choose_quality(opts.dest_evo, r)
 end
 
 return Q

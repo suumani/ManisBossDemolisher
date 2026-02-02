@@ -23,7 +23,7 @@ local function audit_caps()
     if not game then return end
     local force = game.forces.player
     
-    local global_cap = CapManager.get_global_cap(force)
+    local combat_cap = CapManager.get_combat_cap(force)
     local fatal_cap  = CapManager.get_fatal_cap(force)
     
     local tech_name = "manis-demolisher-cap-down"
@@ -33,7 +33,7 @@ local function audit_caps()
         lvl = math.max(0, tech.level - tech.prototype.level)
     end
 
-    util.print(string.format(">> [TEST-CAP] Lv:%d | GlobalCap: %d | FatalCap: %d", lvl, global_cap, fatal_cap))
+    util.print(string.format(">> [TEST-CAP] Lv:%d | GlobalCap: %d | FatalCap: %d", lvl, combat_cap, fatal_cap))
 end
 
 local function trigger_mock_export()

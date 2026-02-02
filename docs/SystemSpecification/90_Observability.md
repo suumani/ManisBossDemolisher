@@ -61,6 +61,7 @@
 - 主要パラメータ（key=value 形式）
 
 **例**
+```
 [ManisBossDemolisher][Export][OK]
 trigger=Vulcanus
 dest=gleba
@@ -70,7 +71,7 @@ dest_evo=0.72
 total=12 cap=40
 type=manis-speedstar-small
 quality=normal
-
+```
 
 ※ 実際の実装は Logger 経由で配列連結でもよい。
 
@@ -92,7 +93,7 @@ quality=normal
 - `dest_evo`
 - `total(dest)`
 - `cap(dest)`
-- `type_key`
+- `entity_name`
 - `quality`
 
 **理由**
@@ -174,7 +175,6 @@ quality=normal
 **必須項目**
 - `surface`
 - `entity_name`
-- `type_key`
 - `new_defeated_state=true`
 
 **理由**

@@ -17,12 +17,15 @@ local quality     = require("scripts.services.quality_assigner")
 local Logger = require("scripts.services.Logger")
 local TownCenter  = require("scripts.services.town_center_resolver")
 local CapManager  = require("scripts.services.boss_demolisher_cap_manager")
+local TestHooks   = require("scripts.tests.infrastructure.TestHooks")
 local DemolisherQuery = require("__Manis_lib__/scripts/queries/DemolisherQuery")
 local VirtualMgr  = require("__Manis_lib__/scripts/managers/VirtualEntityManager")
 local Categories  = require("scripts.defines.demolisher_categories")
 
-local function strip_alt_suffix(name)
-  return (name:gsub("%-alt$", ""))
+local function get_dest_evo(dest_surface)
+  local ov = TestHooks.try_get_export_evo_override(dest_surface.name)
+  if type(ov) == "number" then return ov end
+  return game.forces.enemy.get_evolution_factor(dest_surface)
 end
 
 -- ヘルパー: 現在数を正確に数える（実測 + 仮想）
@@ -84,10 +87,18 @@ function boss_demolisher_control.on_rocket_launched_export(ctx)
   -- ★★★ Cap判定 (修正版) ★★★
   local force = game.forces.player
   
-  -- get_global_cap: 全体上限（Combat+Fatal）
-  local global_cap = CapManager.get_global_cap(force)
-  -- get_fatal_cap: Fatal上限（Fatalのみ）
+  -- Cap model (confirmed by spec):
+  -- combat_cap: applied to (combat + fatal) total
+  -- fatal_cap : applied to (fatal only)
+  local combat_cap = CapManager.get_combat_cap(force)
   local fatal_cap  = CapManager.get_fatal_cap(force)
+
+  -- Test hook: override caps (test mode only)
+  local cap_ov = TestHooks.try_get_export_cap_override()
+  if cap_ov then
+    if type(cap_ov.global) == "number" then combat_cap = cap_ov.global end
+    if type(cap_ov.fatal)  == "number" then fatal_cap  = cap_ov.fatal  end
+  end
 
   local cur_nonfatal, cur_fatal = count_total_demolishers(dest_surface)
   local cur_total = cur_nonfatal + cur_fatal
@@ -95,24 +106,23 @@ function boss_demolisher_control.on_rocket_launched_export(ctx)
   local is_fatal_pick = (pick.category == "fatal") or Categories.FATAL[pick.name]
 
   if is_fatal_pick then
-      -- Fatalは単独上限を超えるか、または全体上限を超えるとアウト
-      if cur_fatal >= fatal_cap then
-          Logger.debug(string.format("[Skip] Fatal Cap Reached on %s. Fatal:%d >= Cap:%d", 
-              dest_surface.name, cur_fatal, fatal_cap))
-          return
-      end
-      if cur_total >= global_cap then
-           Logger.debug(string.format("[Skip] Global Cap Reached (Fatal spawn) on %s. Total:%d >= Cap:%d", 
-              dest_surface.name, cur_total, global_cap))
-          return
-      end
+    -- Fatal cap checks fatal count only
+    if cur_fatal >= fatal_cap then
+      Logger.debug(string.format(
+        "[Skip] Fatal Cap Reached on %s. Fatal:%d >= Cap:%d (Total:%d Combat:%d)",
+        dest_surface.name, cur_fatal, fatal_cap, cur_total, cur_nonfatal
+      ))
+      return
+    end
   else
-      -- Combat(Non-Fatal)は全体上限のみチェック
-      if cur_total >= global_cap then
-          Logger.debug(string.format("[Skip] Global Cap Reached on %s. Total:%d >= Cap:%d", 
-              dest_surface.name, cur_total, global_cap))
-          return
-      end
+    -- Combat cap checks total (combat + fatal)
+    if cur_total >= combat_cap then
+      Logger.debug(string.format(
+        "[Skip] Combat Cap Reached on %s. Total:%d >= Cap:%d (Combat:%d Fatal:%d FatalCap:%d)",
+        dest_surface.name, cur_total, combat_cap, cur_nonfatal, cur_fatal, fatal_cap
+      ))
+      return
+    end
   end
   -- ★★★★★★★★★★★★★★★★★★★
 
@@ -126,7 +136,7 @@ function boss_demolisher_control.on_rocket_launched_export(ctx)
   -- 5) 品質
   local dest_evo = 0
   if dest_surface and dest_surface.valid then
-      dest_evo = game.forces.enemy.get_evolution_factor(dest_surface)
+      dest_evo = get_dest_evo(dest_surface)
   end
   
   local q = quality.choose(dest_surface, {
@@ -152,7 +162,7 @@ function boss_demolisher_control.on_rocket_launched_export(ctx)
                 " pos={", position.x, ", ", position.y, "}"})
 
     -- 出現済みフラグ更新
-    local entity_base_name = strip_alt_suffix(pick.name)
+    local entity_base_name = pick.name
     storage.manis_boss_demolisher_flag = storage.manis_boss_demolisher_flag or {}
     storage.manis_boss_demolisher_flag[dest_surface.name] = storage.manis_boss_demolisher_flag[dest_surface.name] or {}
     storage.manis_boss_demolisher_flag[dest_surface.name][entity_base_name] = true

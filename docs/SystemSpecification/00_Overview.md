@@ -7,6 +7,30 @@
 
 本プロジェクトでは、以下の3種類の文書を明確に分離して管理する。
 
+
+## 0. ファイル一覧
+
+
+/docs/SystemSpecification/配下
+```
+00_Overview.md 全体
+01_InvasionExport.md 輸出機能
+02_PlanetStateModel.md 惑星の状態
+03_RocketSoundReaction.md ロケット発射音への反応(デモリッシャー移動機能)
+04_BossClasses.md ボスの種類
+90_Observability.md 観測可能性
+99_TestPlan.md テスト計画
+```
+
+/配下
+```
+spec.ja.md
+spec.md
+README.ja.md
+README.md
+```
+
+
 ### 1.1 spec.ja.md（ユーザ向け一次仕様）
 
  - 対象読者：

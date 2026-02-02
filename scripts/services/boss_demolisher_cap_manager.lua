@@ -37,7 +37,7 @@ end
 
 --- 現在の「全体上限数（Global Cap）」を計算して返す
 -- Combat系はこの値を超えてスポーンできない
-function CapManager.get_global_cap(force)
+function CapManager.get_combat_cap(force)
     local level = get_research_level(force)
     return Calculator.calculate(POLICY.GLOBAL_BASE_CAP, level, POLICY.REDUCTION_STEP, POLICY.GLOBAL_FLOOR)
 end

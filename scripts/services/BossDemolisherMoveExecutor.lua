@@ -11,6 +11,7 @@ local MovePolicy   = require("scripts.policies.boss_demolisher_move_policy")
 local ModRandomProvider = require("scripts.services.ModRandomProvider")
 local Categories   = require("scripts.defines.demolisher_categories")
 local Logger       = require("scripts.services.Logger")
+local TestHooks    = require("scripts.tests.infrastructure.TestHooks")
 
 -- ■ Adapter Factory
 -- 第4引数 id_or_nil は内部で obj.id を見るため削除
@@ -142,6 +143,13 @@ function E.execute_one_step(plan)
         can_move = function(name, evo)
             local result = MovePolicy.can_move(name, evo)
             return result
+        end,
+
+        -- Test hook: override evo for Move (test mode only)
+        get_evolution_factor = function(surface)
+            local ov = TestHooks.try_get_move_evo_override()
+            if type(ov) == "number" then return ov end
+            return game.forces.enemy.get_evolution_factor(surface)
         end,
 
         get_rng = function() return ModRandomProvider.get() end,

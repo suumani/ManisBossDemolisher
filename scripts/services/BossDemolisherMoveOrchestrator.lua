@@ -6,6 +6,7 @@ local MovePlanner = require("__Manis_lib__/scripts/domain/demolisher/move/Demoli
 local MovePlanStore = require("scripts.services.BossDemolisherMovePlanStore")
 local MovePolicy = require("scripts.policies.boss_demolisher_move_policy")
 local ModRandomProvider = require("scripts.services.ModRandomProvider")
+local TestHooks = require("scripts.tests.infrastructure.TestHooks")
 
 -- ★追加: 仮想マネージャ
 local VirtualMgr = require("__Manis_lib__/scripts/managers/VirtualEntityManager")
@@ -52,6 +53,12 @@ function Orchestrator.run_once_all_surfaces()
           -- ここでは元のロジックを尊重
           local planned_total = math.floor(count * evo * 0.5)
           
+          -- Test hook: allow minimum planned_total in test mode (does not affect production).
+          local min_pt = TestHooks.try_get_move_min_planned_total()
+          if type(min_pt) == "number" and min_pt > 0 and planned_total < min_pt then
+            planned_total = min_pt
+          end
+
           if planned_total > MAX_PLANNED_TOTAL then planned_total = MAX_PLANNED_TOTAL end
 
           -- テスト時はevoが低くて0になりがちなので、デバッグ用に最低保証を入れるのもありですが、
