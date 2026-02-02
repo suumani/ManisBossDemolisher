@@ -1,6 +1,6 @@
 {
     "name": "ManisBossDemolisher",
-    "version": "0.1.6",
+    "version": "0.1.7",
     "factorio_version": "2.0",
     "title": "Mani's Boss Demolisher",
     "author": "suumani",
@@ -11,8 +11,9 @@
         "elevated-rails >= 2.0.0",
         "quality >= 2.0.0",
         "space-age >= 2.0.0",
-        "Manis_lib >= 0.1.6",
+        "Manis_lib >= 0.1.7",
         "Manis_definitions >= 0.0.8",
+        "? ManisDemolisherOreAndProcessing >= 0.0.9",
         "? Manis_TestFramework >= 0.0.1",
         "? Manis_Logger >= 0.0.1"
     ]
