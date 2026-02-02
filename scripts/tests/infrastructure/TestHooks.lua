@@ -55,6 +55,15 @@ function H.try_get_export_cap_override()
   return Config.get_export_cap_override(pack_id)
 end
 
+-- Optional override: force spawn position for current pack.
+-- Return: {surface_name=string, x=number, y=number}|nil
+function H.try_get_export_spawn_position()
+  if not Runtime.is_enabled() then return nil end
+  local pack_id = Runtime.get_active_pack_id()
+  if not pack_id then return nil end
+  return Config.get_export_spawn_position(pack_id)
+end
+
 -- ----------------------------
 -- Scheduler hooks
 -- ----------------------------
@@ -104,6 +113,13 @@ function H.try_get_export_quality_roll_override()
   local v = Config.get_export_quality_roll_override(pack_id)
   if type(v) == "number" then return v end
   return nil
+end
+
+function H.try_get_export_spawn_position()
+  if not Runtime.is_enabled() then return nil end
+  local pack_id = Runtime.get_active_pack_id()
+  if not pack_id then return nil end
+  return Config.get_export_spawn_position(pack_id)
 end
 
 return H

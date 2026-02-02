@@ -16,6 +16,10 @@ local PUSH_TO = 450
 -- 工場が小さい場合の最低検索半径（禁則より大きく設定）
 local MIN_SPAWN_RADIUS = 500
 
+local function to_chunk_pos(pos)
+  return { x = math.floor(pos.x / 32), y = math.floor(pos.y / 32) }
+end
+
 local function is_in_forbidden_rect(pos)
   return pos
     and pos.x >= -FORBIDDEN_HALF and pos.x <= FORBIDDEN_HALF
@@ -189,7 +193,7 @@ function S.spawn(ctx)
   }
 
   -- 1. 生成済みエリアなら即時スポーン
-  if surface.is_chunk_generated(ctx.position) then
+  if surface.is_chunk_generated(to_chunk_pos(ctx.position)) then
       local ent = S.spawn_physically(surface, ctx.position, spawn_data)
       if ent and ent.valid then
           return { success = true, entity = ent, virtual = false, virtual_id = nil }

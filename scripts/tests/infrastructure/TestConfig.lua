@@ -63,6 +63,24 @@ function C.get_export_force_pick(pack_id)
   return { name = e.force_pick_name, category = e.force_pick_category }
 end
 
+-- Optional override: force spawn position for Export (pack-level).
+-- Stored as { surface_name=string, x=number, y=number }
+function C.set_export_spawn_position(pack_id, surface_name, pos)
+  local p = ensure_pack(pack_id)
+  p.export = p.export or {}
+  p.export.spawn_position = { surface_name = surface_name, x = pos.x, y = pos.y }
+end
+
+function C.get_export_spawn_position(pack_id)
+  local r = storage and storage[STORAGE_KEY]
+  local p = r and r.packs and r.packs[pack_id]
+  local e = p and p.export
+  local v = e and e.spawn_position
+  if not v or type(v.surface_name) ~= "string" then return nil end
+  if type(v.x) ~= "number" or type(v.y) ~= "number" then return nil end
+  return v
+end
+
 -- ----------------------------
 -- Export cap override (pack-level)
 -- ----------------------------
@@ -152,6 +170,21 @@ function C.get_export_quality_roll_override(pack_id)
   local p = r and r.packs and r.packs[pack_id]
   local e = p and p.export
   return e and e.quality_roll_override or nil
+end
+
+function C.set_export_spawn_position(pack_id, surface_name, pos)
+  local p = ensure_pack(pack_id)
+  p.export = p.export or {}
+  p.export.spawn_position = { surface_name = surface_name, x = pos.x, y = pos.y }
+end
+
+function C.get_export_spawn_position(pack_id)
+  local r = storage and storage[STORAGE_KEY]
+  local p = r and r.packs and r.packs[pack_id]
+  local e = p and p.export
+  local v = e and e.spawn_position
+  if not v or type(v.x) ~= "number" or type(v.y) ~= "number" then return nil end
+  return v
 end
 
 return C

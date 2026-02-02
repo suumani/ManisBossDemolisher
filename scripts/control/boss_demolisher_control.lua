@@ -127,10 +127,18 @@ function boss_demolisher_control.on_rocket_launched_export(ctx)
   -- ★★★★★★★★★★★★★★★★★★★
 
   -- 4) 配置位置
-  local position = spawner.choose_position(dest_surface, { category = pick.category, name = pick.name })
-  if not position then 
-      Logger.debug("[Fail] No valid position found (even with forced bounds).")
-      return 
+  local position = nil
+
+  local pos_ov = TestHooks.try_get_export_spawn_position()
+  if pos_ov and pos_ov.surface_name == dest_surface.name then
+    position = { x = pos_ov.x, y = pos_ov.y }
+  else
+    position = spawner.choose_position(dest_surface, { category = pick.category, name = pick.name })
+  end
+
+  if not position then
+    Logger.debug("[Fail] No valid position found.")
+    return
   end
 
   -- 5) 品質
