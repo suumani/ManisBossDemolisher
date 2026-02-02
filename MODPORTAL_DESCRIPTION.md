@@ -1,68 +1,88 @@
--- __ManisBossDemolisher__/MODPORTAL_DESCRIPTION.md
+# Manis Boss Demolisher
 
-(en)
-Manis Boss Demolisher turns Demolishers into planet-scale threats.
+## (en / English)
 
-In this mod, launching a rocket is no longer a neutral action.
-Your expansion into space can trigger invasions on other planets,
-introducing powerful boss-class Demolishers that persist over time.
+Manis Boss Demolisher is a mod that treats  
+Demolishers as **entities that can affect entire planets**.
 
-These bosses are not simple stat upgrades.
-They are designed to shape the world:
-forcing you to consider planet order, logistics, and sometimes retreat.
+In this mod, launching a rocket is no longer a neutral action.  
+Rocket launches may influence other planets,  
+causing boss-class Demolishers to appear elsewhere in the system.
 
-Boss Demolishers come in multiple tiers
-and may react to player activity, slowly approaching important areas.
-In many situations, avoiding them is the correct decision.
+Through Export events,  
+powerful Demolishers can emerge on other planets  
+and persist there over long periods of time.
 
-To ensure long-term stability and performance:
-- Each planet has strict population caps
-- Caps can be reduced through infinite research
-- Demolishers can exist in ungenerated areas as virtual entities,
-  preventing sudden spawns or performance spikes
+These bosses are not simple stat upgrades.  
+They can affect your long-term decisions, including  
+planet selection, logistics design, base placement,  
+and when to retreat or avoid engagement.
 
-This mod is intentionally not about fair fights.
-Some bosses are meant to be endured, delayed, or bypassed —
-not necessarily defeated.
+Boss Demolishers are unlocked progressively.  
+Some of them respond to player activity  
+and slowly move closer over time.  
+In certain situations, choosing **not to fight**  
+or keeping your distance can be the better option.
 
-For detailed mechanics and design philosophy, see the GitHub README:
+To avoid unfair behavior, this mod includes:
+
+- Strict per-planet spawn caps
+- Research-based reduction of those caps over time
+- Safe handling of Demolishers in ungenerated areas via virtual entities
+
+This mod does not aim to provide only “fair” fights.  
+Instead, it introduces enemies that are meant to be endured,  
+avoided, delayed, or managed over time.
+
+For detailed specifications and design notes,  
+please refer to the GitHub README:
+
 https://github.com/suumani/ManisBossDemolisher/blob/main/README.md
 
-------
-(ja/日本語) Mani's Boss Demolisher
+## (ja / 日本語)
 
-Manis Boss Demolisher は、
-デモリッシャーを「惑星規模の脅威」として再定義する Mod です。
+Manis Boss Demolisher は、  
+デモリッシャーを **惑星規模で影響を及ぼす存在** として扱う Mod です。
 
-この Mod では、
-ロケットの打ち上げはもはや中立な行為ではありません。
-宇宙進出は、他惑星への侵略を引き起こし、
-強力なボス級デモリッシャーが長期的に存在するようになります。
+この Mod では、ロケットの打ち上げが  
+単なる宇宙進出ではなく、  
+他惑星の状況に影響を与える行動になります。
 
-これらのボスは、単なる数値強化ではありません。
-惑星選択、物流設計、そして撤退判断まで含めて、
-プレイヤーの意思決定そのものに影響を与える存在です。
+輸出（Export）によって、  
+ボス級のデモリッシャーが別の惑星に出現し、  
+長期的にその惑星に残り続けます。
 
-ボス級デモリッシャーは複数の段階を持ち、
-一部はプレイヤーの活動に反応してゆっくりと接近します。
-多くの場合、「戦わない」という選択が正解になります。
+これらのボスは、単なる数値強化ではありません。  
+惑星選択、物流設計、拠点配置、撤退判断など、  
+プレイ中の選択に継続的な影響を与えます。
 
-本 Mod は、理不尽さを避けるために以下を備えています：
+ボス級デモリッシャーは段階的に解禁され、  
+一部はプレイヤーの活動に反応して、  
+ゆっくりと距離を詰めてきます。  
+状況によっては、「戦わない」「距離を保つ」といった  
+選択が有効になることもあります。
+
+本 Mod では、理不尽さを避けるために以下を備えています：
+
 - 惑星ごとの厳密な出現上限（Cap）
-- 無限研究による上限の段階的削減
+- 研究による出現上限の段階的な緩和
 - 未生成エリアでも安全に管理される仮想デモリッシャー
 
-この Mod は「公平な戦闘」を提供するものではありません。
-倒すことを前提としない敵、
-耐え、避け、遅らせるための脅威を追加します。
+この Mod は、  
+常に正面から倒せる敵だけを追加するものではありません。  
+耐え、避け、遅らせるといった判断を含む、  
+長期的な脅威を追加します。
 
-詳細な仕様や設計思想については、GitHub の README を参照してください：
+詳細な仕様や設計思想については、  
+GitHub の README を参照してください：
+
 https://github.com/suumani/ManisBossDemolisher/blob/main/README.ja.md
 
 Updates
+- ver.0.1.6 fixed some features.
 - ver.0.1.5 introduced global cap control and research-based reduction
 - ver.0.1.5 added virtual entity handling for ungenerated areas
 - ver.0.1.4 stabilized movement and invasion logic
-- ver.0.0.8 - 0.1.3 fixed min features.
+- ver.0.0.8 - 0.1.3 fixed some features.
 - ver.0.0.7 fixed prototypes.
 - ver.0.0.5 fixed moving feature.
