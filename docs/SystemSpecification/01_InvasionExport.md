@@ -1,7 +1,7 @@
 # Invasion Export Specification  
 `docs/SystemSpecification/01_InvasionExport.md`
 
-**Version:** v1.0 (confirmed)  
+**Version:** v0.1.6 (confirmed)  
 **Scope:** Manis Boss Demolisher
 
 ---
@@ -106,6 +106,65 @@ dest_surface が有効である条件は **Importable のみ**とする：
 
 ---
 
+## 【新設】6. 輸出位置選定（Spawn Positioning）
+
+※ 現行仕様では暗黙だったため、明示化する
+
+### EXP-POS-001: Spawn position is selected per export
+
+ - Export 実行時、輸入されるデモリッシャーの スポーン位置は必ず評価される
+ - スポーン位置の選定は dest_surface 上で行われる
+
+### EXP-POS-002: Position selection may fail (SKIP)
+
+ - 以下の条件下では、有効なスポーン位置が見つからない場合がある：
+   - dest_surface 外周における高密度配置
+   - 禁則範囲（FORBIDDEN）との衝突
+   - 既存デモリッシャーとの距離制約
+ - この場合、Export の終端結果は SKIP とする
+ - これは 仕様上許容される結果であり、FAIL ではない
+
+### EXP-POS-003: Position failure must be observable
+
+ - EXP-POS-002 により SKIP となった場合、必ず観測可能なログを出力すること
+ - ログには最低限以下を含める：
+   - outcome=SKIP
+   - reason=no_valid_position
+   - dest_surface
+   - category（combat / fatal）
+
+### EXP-POS-004: Density check scope (Physical only)
+
+ - スポーン位置選定における密度判定は、Physical entity のみを対象とする
+ - Virtual entity は現行仕様では考慮しない
+
+> 注記（既知課題）
+> Virtual entity が大量に存在する場合、
+> スポーン位置選定が実態と乖離する可能性がある。
+> この点は 将来の仕様拡張候補とする。
+
+## 【新設】6.1 Chunk 生成状態とスポーン形態
+### EXP-CHUNK-001: Spawn mode depends on chunk generation
+
+ - dest_surface 上のスポーン位置が属するチャンクが：
+   - 生成済みである場合 → Physical spawn
+   - 未生成である場合 → Virtual spawn
+
+### EXP-CHUNK-002: Chunk coordinate reference
+
+ - チャンク生成判定は、スポーン位置（タイル座標）をチャンク座標に変換した上で評価する
+ - タイル座標を直接用いた判定は 仕様違反とみなす
+
+※ 本仕様は、テストにより検証済み（EXP-BASIC-CHUNK-001）
+
+### EXP-CHUNK-003: Virtual to Physical materialization
+
+ - Virtual spawn は、該当チャンクの生成イベントによりPhysical に実体化される
+ - 実体化が成功した場合、対応する Virtual entity は削除される
+
+---
+
+
 ## 7. 進行（Unlock Progression）
 
 ### EXP-PROG-001: Progression scope
@@ -166,10 +225,8 @@ cap(evo) 以上の場合、新規輸入スポーンは行わない（SKIP）
 ### EXP-CAP-005: Dual-cap model (global + fatal)
 
 本 Mod の cap は、以下 2 種類の上限で構成される：
-
-combat_cap：Combat + Fatal の合計上限（負荷上限）
-
-fatal_cap：Fatal のみの上限（Fatalが増えすぎないための抑止）
+- combat_cap：Combat + Fatal の合計上限（負荷上限）
+- fatal_cap：Fatal のみの上限（Fatalが増えすぎないための抑止）
 
 両方の上限は、dest_surface 上の現在数に対して評価される。
 
@@ -177,13 +234,10 @@ fatal_cap：Fatal のみの上限（Fatalが増えすぎないための抑止）
 
 本 Mod では、プレイ体験上の理由により：
 
-Combat が先に枠を埋めてしまい Fatal が出現しない
-という状況を 仕様違反とみなす。
-
-Fatal 系は「目玉」であり、Combat 系に枠を食われて出現しない状況を防ぐ
-
-Comat系はCombat系＋Fatal系の現在数でCombat_capが適用される
-Fatal系は、Fatal系のみの現在数でfatal_capが適用される
+- Combat が先に枠を埋めてしまい Fatal が出現しないという状況を 仕様違反とみなす。
+- Fatal 系は「目玉」であり、Combat 系に枠を食われて出現しない状況を防ぐ
+- Comat系はCombat系＋Fatal系の現在数でCombat_capが適用される
+- Fatal系は、Fatal系のみの現在数でfatal_capが適用される
 
 
 ---
@@ -216,6 +270,18 @@ Export 評価は必ず以下のログを出力できること：
 
 ログフォーマットの詳細は `90_Observability.md` に委譲する。
 
+### OBS-EXP-002: Spawn positioning log (INFO)
+
+以下のイベントは INFO レベルで出力されなければならない：
+- ロケット発射（trigger）
+- Export 結果（OK / SKIP）
+- スポーン結果：
+  - dest_surface
+  - entity_name
+  - spawn_kind=phy | virt
+  - position
+- Chunk 生成による Virtual → Physical 実体化
+
 ---
 
 ## 12. Move との関係（参照）
@@ -234,6 +300,18 @@ Export 評価は必ず以下のログを出力できること：
 - `02_PlanetStateModel.md`
 - `03_RocketSoundReaction.md`
 - `04_BossClasses.md`
+
+---
+## 【新設】14. 既知の境界条件・設計上の注意
+### KNOWN-EXP-001: Position selection instability
+
+- 高密度環境では、スポーン位置選定が不安定になる可能性がある
+- 現行実装では試行回数に上限があり、失敗時は SKIP となる
+
+### KNOWN-EXP-002: Virtual density is not considered
+
+- Virtual entity は密度判定に含まれない
+- 大量の Virtual が同時存在する場合、物理スポーンが連続して発生する可能性がある
 
 ---
 
