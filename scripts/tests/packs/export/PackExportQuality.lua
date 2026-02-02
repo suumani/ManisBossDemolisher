@@ -15,7 +15,7 @@
 --   - 初回normal判定のキーは entity_name（完全一致）である
 -- ------------------------------------------------------------
 -- Test Results:
--- ver.0.1.6 Pass 1 Fail 1
+-- ver.0.1.6 Passed
 -- ------------------------------------------------------------
 local TestRunner = require("__Manis_TestFramework__/scripts/test/TestRunner")
 
