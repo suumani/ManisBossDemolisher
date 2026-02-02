@@ -148,34 +148,7 @@ gigantic-small
  - 「ボス扱い」として特別な制御を受ける集合
  - 徘徊範囲制限などに使用される
 
-## 6. Exportにおける「種類（Type Key）」定義
-### TAX-TYPE-001: Purpose of Type Key
-
-Type Key は以下の仕様を実現するために用いられる：
- - 各種類の 最初の1体は Quality=normal
- - 2体目以降は品質ロールを行う
-
-### TAX-TYPE-002: Type Key definition (confirmed)
-
- - Type Key は alt/non--alt を統合する
- - 定義：
-```
-type_key = base_name(entity_name)
-```
- - base_name は -alt サフィックスを除去した名称
-
-#### 例
-
- - manis-speedstar-small-demolisher
- - manis-speedstar-small-demolisher-alt
-→ 同一 Type Key
-
-### TAX-TYPE-003: Rationale
-
- - -alt は資源ドロップ差分のための派生であり、強さ・進行・品質に影響させるべきではない
- - Type Key を統合することで、「初回normal」が二重に発生することを防ぐ
-
-## 7. Export進行（Unlock Progression）
+## 6. Export進行（Unlock Progression）
 
 ### TAX-PROG-001: Progression scope
 - 進行（解禁）は **dest_surface ごと**に管理される
@@ -228,7 +201,7 @@ type_key = base_name(entity_name)
 
 ※ king は全デモリッシャー中の最上位とする。
 
-## 8. Moveにおける可否
+## 7. Moveにおける可否
 #### MOV-CLASS-001: Move eligibility
 
  - Move 対象：
@@ -240,7 +213,7 @@ type_key = base_name(entity_name)
  - Fatal 系は襲ってくる敵ではなく、
 地形制約レベルの存在として設計されている
 
-## 9. Defeated フラグにおける「撃破」対象
+## 8. Defeated フラグにおける「撃破」対象
 ### DEF-SCOPE-001: Defeated definition
 
  - Defeated=true は、
@@ -248,7 +221,7 @@ type_key = base_name(entity_name)
    - DemolisherNames.ALL に属するデモリッシャーを
    - 1体でも撃破した場合に成立する
 
-## 10. 本書の更新ルール
+## 9. 本書の更新ルール
  - 分類・強さ順・Tier の変更は慎重に行う
  - 変更時は必ず：
    - 01_InvasionExport.md

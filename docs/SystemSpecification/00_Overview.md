@@ -20,6 +20,7 @@
 04_BossClasses.md ボスの種類
 90_Observability.md 観測可能性
 99_TestPlan.md テスト計画
+99_TestStatus_Summary.md テストサマリ
 ```
 
 /配下
