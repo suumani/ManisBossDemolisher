@@ -8,6 +8,7 @@ local S = {}
 local VirtualMgr = require("__Manis_lib__/scripts/managers/VirtualEntityManager")
 local Categories = require("scripts.defines.demolisher_categories")
 local DRand = require("scripts.util.DeterministicRandom")
+local Logger = require("scripts.services.Logger")
 
 -- 禁則範囲（この半径内には湧かない）
 local FORBIDDEN_HALF = 400
@@ -99,39 +100,76 @@ function S.choose_position(surface, opts)
   local force = game.forces.player
   local bounds = get_search_bounds_chunks(surface, force)
 
-  local margin = (category == "fatal") and 6 or 1
-  local half = (category == "fatal") and 2000 or 500
+  -- 「内側の最外周1チャンク帯」を使う（外側には出さない）
+  local edge_minx, edge_maxx = bounds.minx, bounds.maxx
+  local edge_miny, edge_maxy = bounds.miny, bounds.maxy
+
+  -- Fatalは密度制約が強い / Combatは弱い（ここでは無効化）
+  local half = (category == "fatal") and 2000 or 0
   local predicate = (category == "fatal") and is_fatal or is_combat
 
-  local function tile_center_of_chunk(cx, cy)
-    return { x = cx * 32 + 16, y = cy * 32 + 16 }
+  local function random_pos_in_chunk(cx, cy)
+    -- チャンク中心固定ではなく、チャンク内ランダム（偏りを減らす）
+    local base_x = cx * 32
+    local base_y = cy * 32
+    return {
+      x = base_x + DRand.random(0, 31),
+      y = base_y + DRand.random(0, 31),
+    }
   end
 
-  local function choose_chunk_on_side(side)
+  local function choose_chunk_on_edge(side)
     if side == 1 then
-      return (bounds.minx - margin), DRand.random(bounds.miny, bounds.maxy)
+      return edge_minx, DRand.random(edge_miny, edge_maxy)
     elseif side == 2 then
-      return (bounds.maxx + margin), DRand.random(bounds.miny, bounds.maxy)
+      return edge_maxx, DRand.random(edge_miny, edge_maxy)
     elseif side == 3 then
-      return DRand.random(bounds.minx, bounds.maxx), (bounds.miny - margin)
+      return DRand.random(edge_minx, edge_maxx), edge_miny
     else
-      return DRand.random(bounds.minx, bounds.maxx), (bounds.maxy + margin)
+      return DRand.random(edge_minx, edge_maxx), edge_maxy
     end
   end
 
   local tries = (category == "fatal") and 30 or 15
 
+  local pushed_count = 0
+  local rejected_count = 0
+
   for _ = 1, tries do
     local side = DRand.random(1, 4)
-    local cx, cy = choose_chunk_on_side(side)
-    local pos = tile_center_of_chunk(cx, cy)
+    local cx, cy = choose_chunk_on_edge(side)
+    local pos0 = random_pos_in_chunk(cx, cy)
 
-    pos = push_out_of_forbidden(pos)
+    -- 禁則は最後に押し出す（pos0を壊さない）
+    local pos = { x = pos0.x, y = pos0.y }
+    if is_in_forbidden_rect(pos) then
+      pushed_count = pushed_count + 1
+      pos = push_out_of_forbidden(pos)
+    end
 
+    -- Combatは密度制約を実質無効（仕様意図に合わせる）
+    if category ~= "fatal" then
+      return pos
+    end
+
+    -- Fatalのみ密度チェック
     if not has_in_rect(surface, pos, half, predicate) then
       return pos
     end
+
+    rejected_count = rejected_count + 1
   end
+
+  Logger.debug({
+    "[ChoosePosition][Fail]",
+    " surface=", surface.name,
+    " category=", category,
+    " tries=", tries,
+    " bounds={", bounds.minx, ",", bounds.maxx, ",", bounds.miny, ",", bounds.maxy, "}",
+    " half=", half,
+    " pushed=", pushed_count,
+    " rejected=", rejected_count,
+  })
 
   return nil
 end
@@ -229,6 +267,14 @@ function S.process_virtual_queue(event)
         if ent and ent.valid then
             -- 成功したら削除 (ID指定)
             VirtualMgr.remove(surface, entry.id)
+          Logger.info({
+            "[Virtual][Materialize]",
+            " surface=", surface.name,
+            " name=", entry.data and entry.data.name or "unknown",
+            " pos={", entry.position.x, ",", entry.position.y, "}",
+            " vid=", tostring(entry.id),
+            " reason=chunk_generated",
+          })
         else
             -- 失敗時は残す (何もしない)
         end
