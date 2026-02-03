@@ -1,4 +1,4 @@
--- scripts/tests/infrastructure/TestBootstrap.lua
+-- __ManisBossDemolisher__/scripts/tests/infrastructure/TestBootstrap.lua
 -- ------------------------------------------------------------
 -- Responsibility:
 --   Bootstrap utilities for MBD test packs.

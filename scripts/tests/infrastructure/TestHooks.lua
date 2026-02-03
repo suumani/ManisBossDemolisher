@@ -1,4 +1,4 @@
--- scripts/tests/infrastructure/TestHooks.lua
+-- __ManisBossDemolisher__/scripts/tests/infrastructure/TestHooks.lua
 -- ------------------------------------------------------------
 -- Responsibility:
 --   The ONLY gateway production code may use to cooperate with tests.

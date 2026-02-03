@@ -1,4 +1,4 @@
--- scripts/events/on_rocket_launched.lua
+-- __ManisBossDemolisher__/scripts/events/on_rocket_launched.lua
 local boss_demolisher_control = require("scripts.control.boss_demolisher_control")
 local rocket_launch_history_store = require("__Manis_lib__/scripts/domain/demolisher/move/RocketLaunchHistoryStore")
 local Logger = require("scripts.services.Logger")

@@ -1,4 +1,4 @@
--- scripts/tests/packs/defeated/PackDefeatedFlag.lua
+-- __ManisBossDemolisher__/scripts/tests/packs/defeated/PackDefeatedFlag.lua
 -- ------------------------------------------------------------
 -- Responsibility:
 --   PACK-DEFEATED-FLAG:

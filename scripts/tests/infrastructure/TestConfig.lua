@@ -1,4 +1,4 @@
--- scripts/tests/infrastructure/TestConfig.lua
+-- __ManisBossDemolisher__/scripts/tests/infrastructure/TestConfig.lua
 -- ------------------------------------------------------------
 -- Responsibility:
 --   Pack/scenario-level test configuration store for ManisBossDemolisher.

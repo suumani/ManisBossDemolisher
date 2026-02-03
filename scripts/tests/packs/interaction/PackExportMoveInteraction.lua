@@ -1,4 +1,4 @@
--- scripts/tests/packs/interaction/PackExportMoveInteraction.lua
+-- __ManisBossDemolisher__/scripts/tests/packs/interaction/PackExportMoveInteraction.lua
 -- ------------------------------------------------------------
 -- Responsibility:
 --   PACK-EXPORT-MOVE-INTERACTION:

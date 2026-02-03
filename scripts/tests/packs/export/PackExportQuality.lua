@@ -1,4 +1,4 @@
--- scripts/tests/packs/export/PackExportQuality.lua
+-- __ManisBossDemolisher__/scripts/tests/packs/export/PackExportQuality.lua
 -- ------------------------------------------------------------
 -- Responsibility:
 --   PACK-EXPORT-QUAL:

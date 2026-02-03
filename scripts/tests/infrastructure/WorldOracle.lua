@@ -1,4 +1,4 @@
--- scripts/tests/infrastructure/WorldOracle.lua
+-- __ManisBossDemolisher__/scripts/tests/infrastructure/WorldOracle.lua
 -- ------------------------------------------------------------
 -- Responsibility:
 --   World-state oracle for MBD tests.

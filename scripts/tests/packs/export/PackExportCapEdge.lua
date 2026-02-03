@@ -1,4 +1,4 @@
--- scripts/tests/packs/export/PackExportCapEdge.lua
+-- __ManisBossDemolisher__/scripts/tests/packs/export/PackExportCapEdge.lua
 -- ------------------------------------------------------------
 -- Responsibility:
 --   PACK-EXPORT-CAP-EDGE:

@@ -1,4 +1,4 @@
--- scripts/tests/infrastructure/TestRuntime.lua
+-- __ManisBossDemolisher__/scripts/tests/infrastructure/TestRuntime.lua
 -- ------------------------------------------------------------
 -- Responsibility:
 --   Test runtime context for ManisBossDemolisher.

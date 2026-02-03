@@ -1,4 +1,4 @@
--- scripts/tests/mbd_test_command.lua
+-- __ManisBossDemolisher__/scripts/tests/mbd_test_command.lua
 -- ------------------------------------------------------------
 -- Responsibility:
 --   Register a minimal test command for ManisBossDemolisher using Manis_TestFramework.
