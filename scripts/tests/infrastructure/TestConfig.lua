@@ -6,16 +6,29 @@
 --   - Keeps configs separated by pack_id (and optionally scenario_id).
 -- Notes:
 --   - This is configuration (what we want), not execution state.
+--   - This module is test-only infrastructure.
+--   - Write paths create tables; read paths never create tables.
 -- ------------------------------------------------------------
 local C = {}
 
 local STORAGE_KEY = "mbd_test_config"
 
+-- ----------------------------
+-- Storage access helpers
+-- ----------------------------
+
+-- root (write): ensures the storage root exists and returns it.
 local function root()
   storage[STORAGE_KEY] = storage[STORAGE_KEY] or {}
   return storage[STORAGE_KEY]
 end
 
+-- peek_root (read): returns the storage root if present, without creating tables.
+local function peek_root()
+  return storage and storage[STORAGE_KEY] or nil
+end
+
+-- ensure_pack (write): ensures pack table exists and returns it.
 local function ensure_pack(pack_id)
   local r = root()
   r.packs = r.packs or {}
@@ -23,12 +36,22 @@ local function ensure_pack(pack_id)
   return r.packs[pack_id]
 end
 
+-- get_pack (read): returns pack table if present, without creating tables.
+local function get_pack(pack_id)
+  local r = peek_root()
+  local packs = r and r.packs
+  return packs and packs[pack_id] or nil
+end
+
+-- ----------------------------
+-- Clear
+-- ----------------------------
 function C.clear_all()
   storage[STORAGE_KEY] = nil
 end
 
 function C.clear_pack(pack_id)
-  local r = storage and storage[STORAGE_KEY]
+  local r = peek_root()
   if not r or not r.packs then return end
   r.packs[pack_id] = nil
 end
@@ -43,9 +66,9 @@ function C.set_export_dest_surface_name(pack_id, surface_name)
 end
 
 function C.get_export_dest_surface_name(pack_id)
-  local r = storage and storage[STORAGE_KEY]
-  local p = r and r.packs and r.packs[pack_id]
-  return p and p.export and p.export.dest_surface_name or nil
+  local p = get_pack(pack_id)
+  local e = p and p.export
+  return e and e.dest_surface_name or nil
 end
 
 function C.set_export_force_pick(pack_id, entity_name, category)
@@ -56,8 +79,7 @@ function C.set_export_force_pick(pack_id, entity_name, category)
 end
 
 function C.get_export_force_pick(pack_id)
-  local r = storage and storage[STORAGE_KEY]
-  local p = r and r.packs and r.packs[pack_id]
+  local p = get_pack(pack_id)
   local e = p and p.export
   if not e or not e.force_pick_name then return nil end
   return { name = e.force_pick_name, category = e.force_pick_category }
@@ -72,8 +94,7 @@ function C.set_export_spawn_position(pack_id, surface_name, pos)
 end
 
 function C.get_export_spawn_position(pack_id)
-  local r = storage and storage[STORAGE_KEY]
-  local p = r and r.packs and r.packs[pack_id]
+  local p = get_pack(pack_id)
   local e = p and p.export
   local v = e and e.spawn_position
   if not v or type(v.surface_name) ~= "string" then return nil end
@@ -91,12 +112,10 @@ function C.set_export_cap_override(pack_id, combat_cap, fatal_cap)
 end
 
 function C.get_export_cap_override(pack_id)
-  local r = storage and storage[STORAGE_KEY]
-  local p = r and r.packs and r.packs[pack_id]
+  local p = get_pack(pack_id)
   local e = p and p.export
   return e and e.cap_override or nil
 end
-
 
 -- ----------------------------
 -- Scheduler override knobs (pack-level)
@@ -108,9 +127,9 @@ function C.set_scheduler_ticks(pack_id, scheduler_key, ticks)
 end
 
 function C.get_scheduler_ticks(pack_id, scheduler_key)
-  local r = storage and storage[STORAGE_KEY]
-  local p = r and r.packs and r.packs[pack_id]
-  return p and p.schedulers and p.schedulers[scheduler_key] or nil
+  local p = get_pack(pack_id)
+  local s = p and p.schedulers
+  return s and s[scheduler_key] or nil
 end
 
 -- ----------------------------
@@ -123,9 +142,9 @@ function C.set_move_min_planned_total(pack_id, n)
 end
 
 function C.get_move_min_planned_total(pack_id)
-  local r = storage and storage[STORAGE_KEY]
-  local p = r and r.packs and r.packs[pack_id]
-  return p and p.move and p.move.min_planned_total or nil
+  local p = get_pack(pack_id)
+  local m = p and p.move
+  return m and m.min_planned_total or nil
 end
 
 function C.set_move_evo_override(pack_id, evo)
@@ -135,9 +154,9 @@ function C.set_move_evo_override(pack_id, evo)
 end
 
 function C.get_move_evo_override(pack_id)
-  local r = storage and storage[STORAGE_KEY]
-  local p = r and r.packs and r.packs[pack_id]
-  return p and p.move and p.move.evo_override or nil
+  local p = get_pack(pack_id)
+  local m = p and p.move
+  return m and m.evo_override or nil
 end
 
 -- Export evo override (per surface, pack-level)
@@ -149,8 +168,7 @@ function C.set_export_evo_override(pack_id, surface_name, evo)
 end
 
 function C.get_export_evo_override(pack_id, surface_name)
-  local r = storage and storage[STORAGE_KEY]
-  local p = r and r.packs and r.packs[pack_id]
+  local p = get_pack(pack_id)
   local e = p and p.export
   local map = e and e.export_evo_override
   if not map then return nil end
@@ -159,15 +177,14 @@ function C.get_export_evo_override(pack_id, surface_name)
   return nil
 end
 
-function C.set_export_quality_roll_override(pack_id, r)
+function C.set_export_quality_roll_override(pack_id, roll)
   local p = ensure_pack(pack_id)
   p.export = p.export or {}
-  p.export.quality_roll_override = r
+  p.export.quality_roll_override = roll
 end
 
 function C.get_export_quality_roll_override(pack_id)
-  local r = storage and storage[STORAGE_KEY]
-  local p = r and r.packs and r.packs[pack_id]
+  local p = get_pack(pack_id)
   local e = p and p.export
   return e and e.quality_roll_override or nil
 end

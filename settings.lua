@@ -12,14 +12,14 @@ data:extend({
     type = "bool-setting",
     name = "manisbossdemolisher-logger-to-log",
     setting_type = "runtime-global",
-    default_value = true,
+    default_value = false,
     order = "z[manisbossdemolisher]-a[logger]-b[to-log]"
   },
   {
     type = "bool-setting",
     name = "manisbossdemolisher-logger-to-print",
     setting_type = "runtime-global",
-    default_value = true,
+    default_value = false,
     order = "z[manisbossdemolisher]-a[logger]-c[to-print]"
   },
   {
