@@ -1,7 +1,6 @@
 -- __ManisBossDemolisher__/control.lua
 require("scripts.events.on_chunk_generated")
 require("scripts.events.on_entity_died")
-require("scripts.events.on_nth_tick_1min")
 require("scripts.events.on_nth_tick_30min")
 require("scripts.events.on_rocket_launched")
 

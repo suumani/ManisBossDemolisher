@@ -285,7 +285,7 @@ local function run_suite()
     export_force(trigger, dest, DemolisherNames.MANIS_GIGANTIC_BEHEMOTH_ALT, "fatal")
 
     local s = pool_set(dest_surface)
-    assert_in(T, s, DemolisherNames.MANIS_CRAZY_KING, "Pool must include king after both behemoth lines spawned")
+    assert_in(T, s, DemolisherNames.MANIS_CRAZY_KING_SMALL, "Pool must include king after both behemoth lines spawned")
 
     Bootstrap.end_pack()
   end

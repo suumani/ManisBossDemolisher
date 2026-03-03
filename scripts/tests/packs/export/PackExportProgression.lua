@@ -88,7 +88,7 @@ local function run_suite()
 
     assert_not_in(T, s, DemolisherNames.MANIS_SPEEDSTAR_SMALL, "Initial pool must not include speedstar")
     assert_not_in(T, s, DemolisherNames.MANIS_GIGANTIC_SMALL,  "Initial pool must not include gigantic")
-    assert_not_in(T, s, DemolisherNames.MANIS_CRAZY_KING,      "Initial pool must not include king")
+    assert_not_in(T, s, DemolisherNames.MANIS_CRAZY_KING_SMALL,      "Initial pool must not include king")
 
     Bootstrap.end_pack()
   end
@@ -177,7 +177,7 @@ local function run_suite()
     local pool = Selector._debug_build_pool(surface)
     local s = make_set(pool)
 
-    assert_in(T, s, DemolisherNames.MANIS_CRAZY_KING, "Pool must include king after both behemoths")
+    assert_in(T, s, DemolisherNames.MANIS_CRAZY_KING_SMALL, "Pool must include king after both behemoths")
 
     Bootstrap.end_pack()
   end

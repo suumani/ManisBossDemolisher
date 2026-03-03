@@ -85,7 +85,7 @@ local function build_pool(surface)
   if has_spawned(surface, DemolisherNames.MANIS_SPEEDSTAR_BEHEMOTH)
       and has_spawned(surface, DemolisherNames.MANIS_GIGANTIC_BEHEMOTH)
   then
-    table.insert(pool, DemolisherNames.MANIS_CRAZY_KING)
+    table.insert(pool, DemolisherNames.MANIS_CRAZY_KING_SMALL)
   end
 
   return pool
