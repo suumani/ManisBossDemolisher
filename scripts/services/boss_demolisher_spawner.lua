@@ -1,24 +1,27 @@
 -- __ManisBossDemolisher__/scripts/services/boss_demolisher_spawner.lua
 -- ----------------------------
--- Spawn / Positioning
+-- 責務:
+-- - デモリッシャーの生成位置を選定する。
+-- - 生成位置の属するchunkからterritoryを解決する。
+-- - territory未取得時は前提違反としてerror()する。
+-- - segmented unitを物理生成する。
 -- ----------------------------
 
 local S = {}
 
-local VirtualMgr = require("__Manis_lib__/scripts/managers/VirtualEntityManager")
 local Categories = require("scripts.defines.demolisher_categories")
 local DRand = require("scripts.util.DeterministicRandom")
 local Logger = require("scripts.services.Logger")
 
--- 禁則範囲（この半径内には湧かない）
 local FORBIDDEN_HALF = 400
--- 禁則内だった場合の押し出し先
 local PUSH_TO = 450
--- 工場が小さい場合の最低検索半径（禁則より大きく設定）
 local MIN_SPAWN_RADIUS = 500
 
 local function to_chunk_pos(pos)
-  return { x = math.floor(pos.x / 32), y = math.floor(pos.y / 32) }
+  return {
+    x = math.floor(pos.x / 32),
+    y = math.floor(pos.y / 32),
+  }
 end
 
 local function is_in_forbidden_rect(pos)
@@ -28,7 +31,10 @@ local function is_in_forbidden_rect(pos)
 end
 
 local function push_out_of_forbidden(pos)
-  if not is_in_forbidden_rect(pos) then return pos end
+  if not is_in_forbidden_rect(pos) then
+    return pos
+  end
+
   if DRand.random(1, 2) == 1 then
     pos.x = (DRand.random(0, 1) == 0) and -PUSH_TO or PUSH_TO
   else
@@ -40,59 +46,112 @@ end
 local function has_in_rect(surface, pos, half, predicate)
   local area = {
     { pos.x - half, pos.y - half },
-    { pos.x + half, pos.y + half }
+    { pos.x + half, pos.y + half },
   }
-  -- 仕様: Density CheckはPhysicalのみ（Virtualは考慮しない簡便化仕様）
-  local ents = surface.find_entities_filtered{ area = area, force = game.forces.enemy }
-  for _, e in pairs(ents) do
-    if e.valid and predicate(e) then
+
+  local entities = surface.find_entities_filtered({
+    area = area,
+    force = game.forces.enemy,
+  })
+
+  for _, entity in pairs(entities) do
+    if entity.valid and predicate(entity) then
       return true
     end
   end
+
   return false
 end
 
-local function is_fatal(e)
-  return Categories.FATAL[e.name] == true
+local function is_fatal(entity)
+  return Categories.FATAL[entity.name] == true
 end
 
-local function is_combat(e)
-  return e.name:find("demolisher", 1, true) and not Categories.FATAL[e.name]
+local function is_combat(entity)
+  return entity.name:find("demolisher", 1, true) and not Categories.FATAL[entity.name]
 end
 
--- 開拓済み範囲を取得するが、最低半径(MIN_SPAWN_RADIUS)を保証する
-local function get_search_bounds_chunks(surface, force) 
-    local minx, maxx = math.huge, -math.huge 
-    local miny, maxy = math.huge, -math.huge 
-    local found = false 
-    
-    for c in surface.get_chunks() do 
-        if force.is_chunk_charted(surface, { x = c.x, y = c.y }) then 
-            found = true 
-            if c.x < minx then minx = c.x end 
-            if c.x > maxx then maxx = c.x end 
-            if c.y < miny then miny = c.y end 
-            if c.y > maxy then maxy = c.y end 
-        end 
-    end 
-    
-    local min_r_chunk = math.ceil(MIN_SPAWN_RADIUS / 32)
+local function get_search_bounds_chunks(surface, force)
+  local minx = math.huge
+  local maxx = -math.huge
+  local miny = math.huge
+  local maxy = -math.huge
+  local found = false
 
-    if not found then 
-        return { minx = -min_r_chunk, maxx = min_r_chunk, miny = -min_r_chunk, maxy = min_r_chunk } 
-    end 
+  for chunk in surface.get_chunks() do
+    if force.is_chunk_charted(surface, { x = chunk.x, y = chunk.y }) then
+      found = true
+      if chunk.x < minx then minx = chunk.x end
+      if chunk.x > maxx then maxx = chunk.x end
+      if chunk.y < miny then miny = chunk.y end
+      if chunk.y > maxy then maxy = chunk.y end
+    end
+  end
 
-    if maxx < min_r_chunk then maxx = min_r_chunk end
-    if minx > -min_r_chunk then minx = -min_r_chunk end
-    if maxy < min_r_chunk then maxy = min_r_chunk end
-    if miny > -min_r_chunk then miny = -min_r_chunk end
+  local min_r_chunk = math.ceil(MIN_SPAWN_RADIUS / 32)
 
-    return { minx = minx, maxx = maxx, miny = miny, maxy = maxy } 
+  if not found then
+    return {
+      minx = -min_r_chunk,
+      maxx = min_r_chunk,
+      miny = -min_r_chunk,
+      maxy = min_r_chunk,
+    }
+  end
+
+  if maxx < min_r_chunk then maxx = min_r_chunk end
+  if minx > -min_r_chunk then minx = -min_r_chunk end
+  if maxy < min_r_chunk then maxy = min_r_chunk end
+  if miny > -min_r_chunk then miny = -min_r_chunk end
+
+  return {
+    minx = minx,
+    maxx = maxx,
+    miny = miny,
+    maxy = maxy,
+  }
 end
 
--- ----------------------------
--- Position selection
--- ----------------------------
+local function resolve_force_name(force_value)
+  local force_name = force_value
+  if type(force_name) == "userdata" then
+    force_name = force_name.name
+  end
+  if not force_name or force_name == "" then
+    force_name = "enemy"
+  end
+  return force_name
+end
+
+local function resolve_quality_name(quality_value)
+  local quality_name = quality_value
+  if type(quality_name) == "userdata" then
+    quality_name = quality_name.name
+  end
+  if not quality_name or quality_name == "" then
+    quality_name = "normal"
+  end
+  return quality_name
+end
+
+local function resolve_territory(surface, position)
+  local chunk_pos = to_chunk_pos(position)
+  local territory = surface.get_territory_for_chunk(chunk_pos)
+
+  if not territory then
+    error(string.format(
+      "MBD_TERRITORY_NOT_FOUND: surface=%s chunk={%d,%d} pos={%s,%s}",
+      surface.name,
+      chunk_pos.x,
+      chunk_pos.y,
+      tostring(position.x),
+      tostring(position.y)
+    ))
+  end
+
+  return territory
+end
+
 function S.choose_position(surface, opts)
   opts = opts or {}
   local category = opts.category or "combat"
@@ -100,16 +159,15 @@ function S.choose_position(surface, opts)
   local force = game.forces.player
   local bounds = get_search_bounds_chunks(surface, force)
 
-  -- 「内側の最外周1チャンク帯」を使う（外側には出さない）
-  local edge_minx, edge_maxx = bounds.minx, bounds.maxx
-  local edge_miny, edge_maxy = bounds.miny, bounds.maxy
+  local edge_minx = bounds.minx
+  local edge_maxx = bounds.maxx
+  local edge_miny = bounds.miny
+  local edge_maxy = bounds.maxy
 
-  -- Fatalは密度制約が強い / Combatは弱い（ここでは無効化）
   local half = (category == "fatal") and 2000 or 0
   local predicate = (category == "fatal") and is_fatal or is_combat
 
   local function random_pos_in_chunk(cx, cy)
-    -- チャンク中心固定ではなく、チャンク内ランダム（偏りを減らす）
     local base_x = cx * 32
     local base_y = cy * 32
     return {
@@ -131,28 +189,24 @@ function S.choose_position(surface, opts)
   end
 
   local tries = (category == "fatal") and 30 or 15
-
   local pushed_count = 0
   local rejected_count = 0
 
   for _ = 1, tries do
     local side = DRand.random(1, 4)
     local cx, cy = choose_chunk_on_edge(side)
-    local pos0 = random_pos_in_chunk(cx, cy)
+    local original_pos = random_pos_in_chunk(cx, cy)
 
-    -- 禁則は最後に押し出す（pos0を壊さない）
-    local pos = { x = pos0.x, y = pos0.y }
+    local pos = { x = original_pos.x, y = original_pos.y }
     if is_in_forbidden_rect(pos) then
       pushed_count = pushed_count + 1
       pos = push_out_of_forbidden(pos)
     end
 
-    -- Combatは密度制約を実質無効（仕様意図に合わせる）
     if category ~= "fatal" then
       return pos
     end
 
-    -- Fatalのみ密度チェック
     if not has_in_rect(surface, pos, half, predicate) then
       return pos
     end
@@ -174,111 +228,35 @@ function S.choose_position(surface, opts)
   return nil
 end
 
--- ----------------------------
--- Spawn wrapper (Physical & Virtual)
--- ----------------------------
-
--- ■ 物理スポーン実行（内部用）
--- @param data: {name=string, quality=string|LuaQuality, force=string|LuaForce, town_center=MapPosition|nil}
-function S.spawn_physically(surface, position, data)
-  local dir = defines.direction.north -- default
-
-  -- 方向計算: 現在地(position)から目的地(town_center)へ向かう
-  if data.town_center then
-      local dx = data.town_center.x - position.x
-      local dy = data.town_center.y - position.y
-      if math.abs(dx) >= math.abs(dy) then
-        dir = (dx >= 0) and defines.direction.east or defines.direction.west
-      else
-        dir = (dy >= 0) and defines.direction.south or defines.direction.north
-      end
-  end
-
-  -- Forceの正規化 (Userdata -> String -> Default)
-  local f = data.force
-  if type(f) == "userdata" then f = f.name end
-  if not f or f == "" then f = "enemy" end
-  
-  -- Qualityの正規化 (Userdata -> String -> Default)
-  local q = data.quality
-  if type(q) == "userdata" then q = q.name end
-  if not q then q = "normal" end
-
-  return surface.create_entity{
-    name      = data.name,
-    position  = position,
-    force     = f,
-    quality   = q,
-    direction = dir,
-  }
-end
-
--- ■ 公開スポーン関数（Controlから呼ばれる）
--- @return { success=boolean, entity=LuaEntity|nil, virtual=boolean, virtual_id=any|nil }
 function S.spawn(ctx)
-  local surface = ctx.surface
-  if not surface or not surface.valid then return nil end
-  if not ctx.name or not ctx.position then return nil end
-
-  -- データ構造の正規化 (VirtualData形式に統一)
-  local spawn_data = {
-      name        = ctx.name,
-      quality     = ctx.quality or "normal",
-      force       = "enemy", -- BossModは常にenemy
-      category    = ctx.category or "combat", -- デフォルト値設定
-      town_center = ctx.town_center,
-      is_fatal    = (Categories.FATAL[ctx.name] == true)
-  }
-
-  -- 1. 生成済みエリアなら即時スポーン
-  if surface.is_chunk_generated(to_chunk_pos(ctx.position)) then
-      local ent = S.spawn_physically(surface, ctx.position, spawn_data)
-      if ent and ent.valid then
-          return { success = true, entity = ent, virtual = false, virtual_id = nil }
-      else
-          return nil -- 生成失敗
-      end
-  else
-      -- 2. 未生成なら仮想キューに入れる
-      -- ID管理対応: nilを渡して新規発行
-      local vid = VirtualMgr.enqueue(surface, nil, ctx.position, spawn_data)
-      
-      -- 戻り値を統一フォーマットで返す
-      if vid then
-          return { success = true, entity = nil, virtual = true, virtual_id = vid }
-      else
-          return nil -- 保存失敗
-      end
+  local surface = ctx and ctx.surface
+  if not surface or not surface.valid then
+    return nil
   end
-end
+  if not ctx.name or not ctx.position then
+    return nil
+  end
 
--- ■ 仮想実体化プロセッサ（イベントから呼ばれる）
-function S.process_virtual_queue(event)
-    local surface = event.surface
-    if not surface or not surface.valid then return end
+  local territory = resolve_territory(surface, ctx.position)
+  local force_name = resolve_force_name(ctx.force or "enemy")
+  local quality_name = resolve_quality_name(ctx.quality or "normal")
 
-    local entries = VirtualMgr.find_in_area(surface, event.area)
-    if #entries == 0 then return end
+  local entity = surface.create_segmented_unit({
+    name = ctx.name,
+    position = ctx.position,
+    force = force_name,
+    quality = quality_name,
+    territory = territory,
+  })
 
-    for _, entry in ipairs(entries) do
-        -- 物理生成 (データは正規化済み前提だが、spawn_physically側で再ガードが入るため安全)
-        local ent = S.spawn_physically(surface, entry.position, entry.data)
-        
-        if ent and ent.valid then
-            -- 成功したら削除 (ID指定)
-            VirtualMgr.remove(surface, entry.id)
-          Logger.info({
-            "[Virtual][Materialize]",
-            " surface=", surface.name,
-            " name=", entry.data and entry.data.name or "unknown",
-            " pos={", entry.position.x, ",", entry.position.y, "}",
-            " vid=", tostring(entry.id),
-            " reason=chunk_generated",
-          })
-        else
-            -- 失敗時は残す (何もしない)
-        end
-    end
+  if entity and entity.valid then
+    return {
+      success = true,
+      entity = entity,
+    }
+  end
+
+  return nil
 end
 
 return S

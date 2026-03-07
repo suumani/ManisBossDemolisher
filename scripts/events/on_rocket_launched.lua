@@ -1,23 +1,29 @@
 -- __ManisBossDemolisher__/scripts/events/on_rocket_launched.lua
+-- ----------------------------
+-- 責務:
+-- - ロケット発射イベントを受け取り、輸出トリガ処理を起動する。
+-- - defeated gate を判定し、条件を満たす場合のみ control へ委譲する。
+-- ----------------------------
+
 local boss_demolisher_control = require("scripts.control.boss_demolisher_control")
-local rocket_launch_history_store = require("__Manis_lib__/scripts/domain/demolisher/move/RocketLaunchHistoryStore")
 local Logger = require("scripts.services.Logger")
 
 local function handle(event)
   local silo = event.rocket_silo
-  if not silo or not silo.valid then return end
+  if not silo or not silo.valid then
+    return
+  end
 
   local surface = silo.surface
-  if not surface or not surface.valid then return end
-
-  rocket_launch_history_store.add(surface.name, silo.position, event.tick)
+  if not surface or not surface.valid then
+    return
+  end
 
   local defeated =
     storage.manis_boss_demolisher_flag
     and storage.manis_boss_demolisher_flag[surface.name]
     and storage.manis_boss_demolisher_flag[surface.name].defeated == true
 
-  -- INFO: trigger
   Logger.info({
     "[Rocket][Launched]",
     " trigger_surface=", surface.name,
@@ -27,7 +33,6 @@ local function handle(event)
   })
 
   if surface.name ~= "vulcanus" and not defeated then
-    -- INFO: gate skip
     Logger.info({
       "[Export][Skip]",
       " reason=defeated_gate",
@@ -37,10 +42,10 @@ local function handle(event)
     return
   end
 
-  boss_demolisher_control.on_rocket_launched_export{
+  boss_demolisher_control.on_rocket_launched_export({
     trigger_surface = surface,
     silo = silo,
-  }
+  })
 end
 
 script.on_event(defines.events.on_rocket_launched, handle)
