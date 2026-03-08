@@ -1,152 +1,251 @@
-# Documentation Policy — Manis Boss Demolisher
+# System Overview — Manis Boss Demolisher
+`docs/SystemSpecification/00_Overview.md`
 
-本ディレクトリは、Manis Boss Demolisher における設計・仕様・テストの拠り所を体系的に保存するためのものである。
-本書は、開発が迷走した場合に必ず立ち返るべき一次資料として位置づけられる。
+**Status:** Active  
+**Scope:** Manis Boss Demolisher
 
-## 1. 文書の役割分担
+---
 
-本プロジェクトでは、以下の3種類の文書を明確に分離して管理する。
+# 0. 本書の目的
 
+本書は Manis Boss Demolisher における  
+**SystemSpecification 全体の入口（Overview）**として機能する。
 
-## 0. ファイル一覧
+本書は以下を整理する。
 
+- Manis Boss Demolisher が **どのようなシステムであるか**
+- システムの **責務と境界**
+- システムの **実行モデル**
+- SystemSpecification 文書構成
 
-/docs/SystemSpecification/配下
+本書は **個別挙動の詳細を定義しない。**
+
+ボスクラス判定、惑星状態、侵略輸出、ロケット反応などの詳細は  
+後続の SystemSpecification 文書に委譲する。
+
+---
+
+# 1. システムの全体像
+
+Manis Boss Demolisher は、
+
+> **ボス級デモリッシャーを追加し、通常個体とは異なる脅威として世界に導入する Mod**
+
+である。
+
+本 Mod は、デモリッシャーを単なる通常敵ではなく
+
+- 戦闘可能な強敵
+- 巨大すぎて直接戦闘に適さない脅威
+- 惑星環境そのものを変える存在
+
+として扱う。
+
+これにより、プレイヤーは  
+**撃破対象として向き合う場面**と  
+**工場レイアウトや進行ルートで回避すべき場面**の両方に直面する。
+
+---
+
+# 2. プレイヤー体験
+
+Manis Boss Demolisher は次のプレイヤー体験を目的とする。
+
+- 通常デモリッシャーとは異なるボス戦体験
+- 強敵との戦闘判断
+- 巨大個体に対する回避・進路設計
+- 惑星環境に対する圧迫感の増加
+
+本 Mod は特に、
+
+- **戦うべき相手**
+- **避けるべき相手**
+- **世界に圧力を与える相手**
+
+を分離して提示することを意図する。
+
+プレイヤーは
+
+- 戦闘継続
+- 撤退
+- 基地配置変更
+- 惑星上の安全圏確保
+
+といった意思決定を迫られる。
+
+---
+
+# 3. システム責務
+
+Manis Boss Demolisher の責務は次の通り。
+
+| Responsibility | Owner |
+|---|---|
+| ボス級デモリッシャーの定義 | Manis Boss Demolisher |
+| 惑星状態に応じたボス脅威モデル | Manis Boss Demolisher |
+| ボス個体クラス管理 | Manis Boss Demolisher |
+| 侵略圧力の外部出力 | Manis Boss Demolisher |
+| ボス関連反応処理 | Manis Boss Demolisher |
+
+本 Mod は次を責務としない。
+
+- Factorio 本体の enemy AI 制御
+- world generation 全体の制御
+- 汎用 job orchestration
+- 他 Mod のドメインロジック実行
+
+---
+
+# 4. 実行モデル
+
+Manis Boss Demolisher は  
+ボス個体、惑星状態、外部反応処理を組み合わせて動作する。
+
+概念上の実行モデルは次の通り。
+
 ```
-00_Overview.md 全体
-01_InvasionExport.md 輸出機能
-02_PlanetStateModel.md 惑星の状態
-03_RocketSoundReaction.md ロケット発射音への反応(デモリッシャー移動機能)
-04_BossClasses.md ボスの種類
-90_Observability.md 観測可能性
-99_TestPlan.md テスト計画
-99_TestStatus_Summary.md テストサマリ
+planet state update
+↓
+boss class evaluation
+↓
+boss-related reaction / export
+↓
+observable world impact
 ```
 
-/配下
+本 Mod の詳細な起動契機や内部処理順は  
+各 SystemSpecification 文書で定義される。
+
+---
+
+# 5. 主要メカニズム
+
+本 Mod の主要メカニズムは次の領域で構成される。
+
 ```
-spec.ja.md
-spec.md
-README.ja.md
-README.md
+planet state model
+↓
+boss class model
+↓
+reaction / export
+↓
+world impact
 ```
 
+各領域の役割は次の通り。
 
-### 1.1 spec.ja.md（ユーザ向け一次仕様）
+| System | Role |
+|---|---|
+| Invasion Export | 外部へ侵略圧力を出力する |
+| Planet State Model | 惑星側の状態を管理する |
+| Rocket Sound Reaction | 特定トリガに対する反応を定義する |
+| Boss Classes | ボス個体の種類と性質を定義する |
 
- - 対象読者：
-   - プレイヤー
-   - Mod利用者
-   - 将来の自分（世界観・意図を忘れたとき）
- - 内容：
-   - 目的 / 非目的
-   - プレイヤー体験
-   - 設計思想・優先順位
-   - 世界観上の前提
- - 記載しないもの：
-   - 条件分岐の詳細
-   - 状態遷移表
-   - 数式・上限・内部判定
-   - テスト観点
+詳細は各文書に委譲する。
 
-👉 spec.ja.md は「なぜそうなっているか」を語る文書である。
+---
 
-### 1.2 docs/SystemSpecification（システム仕様・テスト根拠）
+# 6. ボスクラス
 
- - 対象読者：
-   - 開発者
-   - テスト設計者
-   - 将来の自分（実装を忘れたとき）
- - 内容：
-   - 合否条件が明確な仕様
-   - 状態遷移・入力・出力
-   - 上限・抑止・例外条件
-   - 観測点（ログ・カウンタ）
-   - テスト計画と網羅方針
- - ルール：
-   - すべての仕様項目にIDを付与する
-   - テストケース・ログは必ずこのIDを参照する
+Manis Boss Demolisher は  
+複数のボスクラスを持つシステムである。
 
-👉 テストは必ず SystemSpecification を根拠として作成される。
+ボスクラスは少なくとも次の差を持ちうる。
 
-## 1.3 docs/DesignNotes（設計メモ・検討ログ / 任意）
+- 脅威規模
+- 戦闘可否
+- 惑星への圧力の与え方
+- プレイヤーが取るべき対処
 
- - 対象読者：
-   - 開発者のみ
- - 内容：
-   - 実装上の制約
-   - 検討中の案
-   - 却下された設計
- - 注意：
-   - 仕様ではない
-   - テストの根拠にしてはならない
+本 Mod において重要なのは、  
+**すべての脅威が「倒すべき敵」とは限らない**ことである。
 
-👉 DesignNotes は意思決定の履歴であり、正解ではない。
+詳細は  
+`04_BossClasses.md` に定義される。
 
-## 2. 優先順位と矛盾解決ポリシー
+---
 
-文書間に矛盾が生じた場合、以下の優先順位で判断する。
+# 7. 境界と依存関係
 
- 1. spec.ja.md（ユーザ向け一次仕様）
- 2. SystemSpecification（システム仕様）
- 3. DesignNotes（設計メモ）
+Manis Boss Demolisher は  
+Manis ecosystem 内で次の境界を持つ。
 
-ただし、挙動を変更する決定を行った場合は、
- - spec.ja.md
- - 該当する SystemSpecification
+| System | Responsibility |
+|---|---|
+| Factorio enemy system | AI / pathfinding / native world behavior |
+| 外部 Mod / システム | export を受けた側の処理 |
+| 本 Mod | boss threat modeling / reaction / export |
 
-両方を必ず更新すること。
-片方のみの更新は不正とみなす。
+本 Mod は次の処理を行わない。
 
-## 3. テストに関する基本方針
-### 3.1 テストは「仕様」から起こす
+- Factorio 本体の AI 置換
+- 汎用ジョブ制御
+- 他 Mod の内部状態直接操作
 
- - テストは 仕様の合否を確認するためのものである。
- - 仕様が未定義の箇所については、実装挙動を材料に仕様化を検討してよい。
-   - ただし、実装挙動をそのまま正とみなしてはならない。
-   - 仕様化に先立ち、「実装が正しいか」を必ず相談し、合意を得ること。
- - 実装と既存仕様が衝突した場合、即時にどちらかへ合わせてはならない。
-   - 影響範囲・意図・ユーザ向け一次仕様との整合を含め、慎重に判断する。
-   - 判断が確定するまで、当該点を根拠とするテスト追加・変更は保留する。
- - 未定義箇所のテストは、仕様IDが付与されるまで“ドラフト扱い”とし、合否判定に使ってはならない。
+---
 
-### 3.2 ゲーム挙動テストを主とする
- - 本プロジェクトにおける主対象は ゲームとしての挙動
-   - 侵略が起きるか
-   - 起きないべきときに起きないか
-   - 上限が守られているか
-   - 沈黙・暴走・ロストがないか
- - 低レイヤーの単体テストは原則作成しない
-   - 必要な場合は ログ・観測点の追加を優先する
+# 8. 観測性
 
-### 3.3 低レイヤーテストを作る条件
+Manis Boss Demolisher は  
+ボス関連システムの挙動を観測可能にする。
 
-以下をすべて満たす場合のみ、低レイヤーテストを検討する。
+主な観測対象は次の通り。
 
- - ゲーム挙動テストで 明確なNGが出た
- - 原因が低レイヤー処理であると特定できた
- - 仕様として再発防止が必要である
+- boss class state
+- planet state
+- reaction result
+- export result
 
-## 4. このドキュメントの位置づけ
+観測仕様は  
+`90_Observability.md` に定義される。
 
- - 本書は「作業が迷走したときの原点」である
- - テストや実装が増え、不安や違和感を覚えた場合：
-   1. 本書に立ち返る
-   2. spec.ja.md と SystemSpecification の役割を再確認する
-   3. 仕様に基づかない作業を中断する
+---
 
-👉 この文書に反する進め方は、たとえ動いていても不正である。
+# 9. テスト方針
 
-## 5. 更新ルール
+Manis Boss Demolisher のテストは  
+**仕様を基準として設計される。**
 
- - 本書の更新は慎重に行う
- - 方針が変わる場合は、必ず理由を明示する
- - 更新履歴は DesignNotes に残してよいが、本書自体は常に最新の方針のみを記載する
+テストの基本方針は  
+`TestPolicy.md` に定義される。
 
-## 最後に
+---
 
-本プロジェクトでは、
+# 10. SystemSpecification 文書構成
 
- > 「動いている」よりも「意図通りである」ことを優先する。
+Manis Boss Demolisher の仕様は  
+以下の文書で構成される。
 
-この原則を忘れたとき、本書に立ち返る。
+```
+00_Overview.md
+01_InvasionExport.md
+02_PlanetStateModel.md
+03_RocketSoundReaction.md
+04_BossClasses.md
+90_Observability.md
+TestPolicy.md
+```
+
+---
+
+# 11. 設計意図
+
+Manis Boss Demolisher は、
+
+> **デモリッシャーを「巨大な世界的脅威」として再構成する**
+
+ことを目的として設計されている。
+
+このシステムは
+
+- 強敵としての戦闘体験
+- 回避対象としての地形的脅威
+- 惑星全体に圧力を与える存在感
+
+を通じて、
+
+**戦闘か撤退かという意思決定をプレイヤーへ迫ること**
+
+を目指している。
+
+---
