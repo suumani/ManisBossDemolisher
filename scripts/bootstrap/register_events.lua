@@ -11,7 +11,7 @@ local ExportWindowResetHandler = require("scripts.event_handlers.export_window_r
 local RocketLaunchExportHandler = require("scripts.event_handlers.rocket_launch_export_handler")
 
 function M.register()
-  script.on_event(defines.events.on_entity_died, DemolisherDefeatedHandler.handle)
+  script.on_event(defines.events.on_segmented_unit_died, DemolisherDefeatedHandler.handle)
   script.on_event(defines.events.on_rocket_launched, RocketLaunchExportHandler.handle)
   script.on_nth_tick(60 * 60 * 30, ExportWindowResetHandler.handle)
 end
